@@ -9,6 +9,9 @@ import { CategoryIcon } from "@/components/category-icon"
 import { getProducts } from "@/lib/actions/products"
 import { CATEGORIES, STORE_NAME, STORE_TAGLINE } from "@/lib/constants"
 
+// Forzar renderizado dinámico para soportar autenticación
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: `${STORE_NAME} | ${STORE_TAGLINE} - Miles de Productos en un Solo Lugar`,
   description:

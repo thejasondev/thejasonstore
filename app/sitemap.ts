@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next"
 import { getProducts } from "@/lib/actions/products"
 
+// Forzar renderizado dinámico para soportar cookies de Supabase
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const products = await getProducts()
 
