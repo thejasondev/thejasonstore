@@ -21,7 +21,16 @@ export const metadata = {
 }
 
 export default async function HomePage() {
-  const products = await getProducts()
+  let products: any[] = []
+  let hasError = false
+
+  try {
+    products = await getProducts()
+  } catch (error) {
+    console.error("[v0] Error loading products:", error)
+    hasError = true
+  }
+
   const featuredProducts = products.slice(0, 6)
 
   const jsonLd = {
@@ -160,7 +169,22 @@ export default async function HomePage() {
                 </Link>
               </Button>
             </div>
-            <ProductsCarousel products={featuredProducts} autoPlayInterval={5000} />
+            {featuredProducts.length > 0 ? (
+              <ProductsCarousel products={featuredProducts} autoPlayInterval={5000} />
+            ) : (
+              <div className="text-center py-12 glass-card rounded-lg">
+                <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                <h3 className="text-xl font-semibold mb-2">Próximamente</h3>
+                <p className="text-muted-foreground mb-4">
+                  Estamos preparando productos increíbles para ti. Vuelve pronto.
+                </p>
+                {hasError && (
+                  <p className="text-sm text-muted-foreground/70 mt-2">
+                    Nota: Asegúrate de ejecutar los scripts SQL en la carpeta /scripts para configurar la base de datos.
+                  </p>
+                )}
+              </div>
+            )}
             <div className="text-center mt-8 md:hidden">
               <Button asChild variant="outline" className="group bg-transparent">
                 <Link href="/productos">

@@ -1,24 +1,53 @@
 {
   "name": "The Jason Store",
   "short_name": "Jason Store",
-  "description": "Tu tienda de confianza para productos de calidad",
+  "description": "Tu Marketplace de Confianza - Productos de calidad, compra fácil por WhatsApp",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#F59E0B",
   "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icon-192.jpg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
       "src": "/icon-512.jpg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/jpeg",
+      "purpose": "any"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Ver Productos",
+      "short_name": "Productos",
+      "description": "Explorar catálogo completo",
+      "url": "/productos",
+      "icons": [
+        {
+          "src": "/icon-192.jpg",
+          "sizes": "192x192",
+          "type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "name": "Contactar",
+      "short_name": "Contacto",
+      "description": "Contactar por WhatsApp",
+      "url": "/contacto",
+      "icons": [
+        {
+          "src": "/icon-192.jpg",
+          "sizes": "192x192",
+          "type": "image/jpeg"
+        }
+      ]
+    }
+  ],
+  "categories": ["shopping", "marketplace", "e-commerce"]
 }

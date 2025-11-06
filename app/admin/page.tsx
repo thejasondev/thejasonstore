@@ -4,6 +4,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { getProducts } from "@/lib/actions/products"
 import { ProductsTable } from "@/components/admin/products-table"
+import { InventoryDashboard } from "@/components/admin/inventory-dashboard"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
@@ -37,6 +38,11 @@ export default async function AdminPage() {
         </div>
 
         <div className="space-y-8">
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Alertas de Inventario</h2>
+            <InventoryDashboard />
+          </div>
+
           <div>
             <h2 className="text-2xl font-bold mb-4">Productos</h2>
             <ProductsTable products={products} />

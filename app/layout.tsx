@@ -2,6 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "sonner"
+import { CartProvider } from "@/lib/context/cart-context"
 import { STORE_NAME, STORE_DESCRIPTION, STORE_KEYWORDS, STORE_TAGLINE } from "@/lib/constants"
 import "./globals.css"
 
@@ -71,8 +73,8 @@ export const metadata: Metadata = {
     apple: [{ url: "/icon-192.jpg", sizes: "192x192", type: "image/jpeg" }],
   },
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    { media: "(prefers-color-scheme: light)", color: "#F59E0B" },
+    { media: "(prefers-color-scheme: dark)", color: "#F59E0B" },
   ],
   viewport: {
     width: "device-width",
@@ -103,8 +105,20 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`font-sans antialiased`}>
-        {children}
-        <Analytics />
+        <CartProvider>
+          {children}
+          <Analytics />
+          <Toaster 
+            position="bottom-right"
+            expand={true}
+            richColors
+            closeButton
+            toastOptions={{
+              duration: 4000,
+              className: 'glass-card',
+            }}
+          />
+        </CartProvider>
       </body>
     </html>
   )

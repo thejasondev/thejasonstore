@@ -3,12 +3,28 @@
 import Link from "next/link"
 import { Search, ShoppingBag, Menu, X, Home, Package, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react"
 import { STORE_NAME } from "@/lib/constants"
+import { CartButton } from "@/components/cart-button"
+import { SearchModal } from "@/components/search-modal"
+import { useCart } from "@/lib/context/cart-context"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
 
   return (
     <>
@@ -34,35 +50,45 @@ export function Header() {
             </Link>
           </nav>
 
-          {/* Search Bar - Desktop */}
           <div className="hidden md:flex items-center space-x-4 flex-1 max-w-md mx-8">
-            <div className="relative w-full group">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-accent" />
-              <Input
-                type="search"
-                placeholder="Buscar productos..."
-                className="pl-10 w-full glass-card border-border/50 focus:border-accent transition-all"
-              />
-            </div>
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="relative w-full group flex items-center gap-3 px-4 py-2 rounded-lg glass-card border border-border/50 hover:border-accent transition-all"
+            >
+              <Search className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent" />
+              <span className="text-sm text-muted-foreground">Buscar productos...</span>
+              <kbd className="ml-auto hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </button>
+          </div>
+
+          {/* Cart Button - Desktop */}
+          <div className="hidden md:flex items-center gap-2">
+            <CartButton />
           </div>
 
           {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden relative"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <Menu
-              className={`h-6 w-6 transition-all ${mobileMenuOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"}`}
-            />
-            <X
-              className={`h-6 w-6 absolute transition-all ${mobileMenuOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"}`}
-            />
-            <span className="sr-only">Abrir menú</span>
-          </Button>
+          <div className="flex md:hidden items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)} className="relative">
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Buscar</span>
+            </Button>
+            <CartButton />
+            <Button variant="ghost" size="icon" className="relative" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <Menu
+                className={`h-6 w-6 transition-all ${mobileMenuOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"}`}
+              />
+              <X
+                className={`h-6 w-6 absolute transition-all ${mobileMenuOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"}`}
+              />
+              <span className="sr-only">Abrir menú</span>
+            </Button>
+          </div>
         </div>
       </header>
+
+      <SearchModal open={searchOpen} onOpenChange={setSearchOpen} />
 
       <div
         className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
@@ -99,18 +125,6 @@ export function Header() {
                 <span className="text-lg font-medium">{item.label}</span>
               </Link>
             ))}
-
-            {/* Search Bar */}
-            <div className="pt-4">
-              <div className="relative group">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-accent" />
-                <Input
-                  type="search"
-                  placeholder="Buscar productos..."
-                  className="pl-10 w-full glass-card border-border/50 focus:border-accent"
-                />
-              </div>
-            </div>
 
             {/* Decorative Element */}
             <div className="pt-8 mt-auto">

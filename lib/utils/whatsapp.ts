@@ -23,6 +23,13 @@ export function generateWhatsAppUrl(product: Product, productUrl: string): strin
 }
 
 /**
+ * Generates a WhatsApp URL with a custom message
+ */
+export function getWhatsAppUrl(message: string): string {
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`
+}
+
+/**
  * Opens WhatsApp with pre-filled message
  */
 export function openWhatsApp(product: Product, productUrl: string): void {

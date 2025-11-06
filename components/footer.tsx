@@ -42,7 +42,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <MessageCircle className="h-4 w-4" />
-                <span>WhatsApp: +52 133 1XXX XXXX</span>
+                <span>WhatsApp: +53 53118193</span>
               </li>
               <li className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
@@ -50,7 +50,7 @@ export function Footer() {
               </li>
               <li className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>México</span>
+                <span>Cuba</span>
               </li>
             </ul>
           </div>

@@ -1,82 +1,75 @@
-import { Suspense } from "react"
-import type { Metadata } from "next"
+"use client"
+
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 import { ProductCard } from "@/components/product-card"
-import { CategoryIcon } from "@/components/category-icon"
-import { getProducts, getProductsByCategory } from "@/lib/actions/products"
-import { CATEGORIES, STORE_NAME } from "@/lib/constants"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ProductFilters, type FilterState } from "@/components/product-filters"
+import { searchProductsAdvanced, getPriceRange } from "@/lib/actions/products"
+import { getCategories } from "@/lib/actions/categories"
+import type { Product, Category } from "@/lib/types"
+import { ProductCardSkeleton } from "@/components/skeletons"
+import { AlertCircle } from "lucide-react"
 
-interface ProductsPageProps {
-  searchParams: Promise<{ categoria?: string }>
-}
+export default function ProductsPage() {
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams.get("q")
 
-export async function generateMetadata({ searchParams }: ProductsPageProps): Promise<Metadata> {
-  const params = await searchParams
-  const category = CATEGORIES.find((cat) => cat.slug === params.categoria)
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 })
+  const [isLoading, setIsLoading] = useState(true)
+  const [total, setTotal] = useState(0)
+  const [error, setError] = useState<string | null>(null)
 
-  if (category) {
-    return {
-      title: `${category.name} - Productos de Calidad | ${STORE_NAME}`,
-      description: `Descubre nuestra selección de productos en ${category.name}. Vendedores verificados, mejores precios y compra segura por WhatsApp. Envío rápido y garantía de calidad.`,
-      openGraph: {
-        title: `${category.name} | ${STORE_NAME}`,
-        description: `Explora productos de ${category.name} de vendedores confiables. Mejores ofertas y precios competitivos.`,
-      },
+  useEffect(() => {
+    loadInitialData()
+  }, [searchQuery])
+
+  const loadInitialData = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const [productsData, categoriesData, priceData] = await Promise.all([
+        searchProductsAdvanced(searchQuery ? { query: searchQuery } : {}),
+        getCategories(),
+        getPriceRange(),
+      ])
+      setProducts(productsData.products)
+      setTotal(productsData.total)
+      setCategories(categoriesData)
+      setPriceRange(priceData)
+
+      if (productsData.total === 0) {
+        setError("No hay productos disponibles. Por favor, ejecuta el script SQL de configuración.")
+      }
+    } catch (error) {
+      console.error("[v0] Error loading data:", error)
+      setError("Error al cargar los productos. Por favor, verifica la configuración de la base de datos.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  return {
-    title: `Todos los Productos | ${STORE_NAME} - Marketplace Online`,
-    description:
-      "Explora miles de productos de vendedores verificados. Electrónica, moda, hogar, deportes, libros, juguetes y más. Compra seguro por WhatsApp con las mejores ofertas.",
-    openGraph: {
-      title: `Catálogo Completo | ${STORE_NAME}`,
-      description: "Miles de productos de calidad en un solo lugar. Vendedores verificados y mejores precios.",
-    },
+  const handleFilterChange = async (filters: FilterState) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const result = await searchProductsAdvanced({
+        ...filters,
+        query: searchQuery || filters.query,
+      })
+      setProducts(result.products)
+      setTotal(result.total)
+    } catch (error) {
+      console.error("[v0] Error filtering products:", error)
+      setError("Error al filtrar productos.")
+    } finally {
+      setIsLoading(false)
+    }
   }
-}
-
-function ProductCardSkeleton() {
-  return (
-    <div className="space-y-4">
-      <Skeleton className="aspect-square w-full" />
-      <Skeleton className="h-6 w-3/4" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-8 w-1/2" />
-    </div>
-  )
-}
-
-async function ProductsList({ categoria }: { categoria?: string }) {
-  const products = categoria ? await getProductsByCategory(categoria) : await getProducts()
-
-  if (products.length === 0) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-lg text-muted-foreground">
-          No se encontraron productos en esta categoría. Explora otras categorías o contáctanos por WhatsApp.
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  )
-}
-
-export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const params = await searchParams
-  const selectedCategory = params.categoria
-  const categoryName = CATEGORIES.find((cat) => cat.slug === selectedCategory)?.name
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -85,47 +78,62 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            {categoryName ? `Productos de ${categoryName}` : "Todos los Productos"}
+            {searchQuery ? `Resultados para "${searchQuery}"` : "Todos los Productos"}
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            {categoryName
-              ? `Explora nuestra selección curada de productos en ${categoryName} de vendedores verificados`
-              : "Descubre miles de productos de calidad de vendedores confiables. Mejores precios y ofertas exclusivas."}
+            Descubre miles de productos de calidad de vendedores confiables. Mejores precios y ofertas exclusivas.
           </p>
         </div>
 
-        {/* Category Filters */}
-        <nav className="mb-8 flex flex-wrap gap-2" aria-label="Filtros de categoría">
-          <Button variant={!selectedCategory ? "default" : "outline"} asChild className="gap-2">
-            <a href="/productos">Todos</a>
-          </Button>
-          {CATEGORIES.map((category) => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.slug ? "default" : "outline"}
-              asChild
-              className="gap-2"
-            >
-              <a href={`/productos?categoria=${category.slug}`} aria-label={`Filtrar por ${category.name}`}>
-                <CategoryIcon iconName={category.icon || "Laptop"} className="h-4 w-4" />
-                {category.name}
-              </a>
-            </Button>
-          ))}
-        </nav>
-
-        {/* Products Grid */}
-        <Suspense
-          fallback={
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ProductCardSkeleton key={i} />
-              ))}
+        {error && (
+          <div className="mb-6 glass-card rounded-2xl p-6 border-l-4 border-accent">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-accent mt-0.5" />
+              <div>
+                <h3 className="font-semibold mb-1">Configuración Requerida</h3>
+                <p className="text-sm text-muted-foreground">{error}</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Ejecuta el script <code className="bg-muted px-2 py-1 rounded">scripts/SETUP_FINAL.sql</code> en tu
+                  Supabase SQL Editor.
+                </p>
+              </div>
             </div>
-          }
-        >
-          <ProductsList categoria={selectedCategory} />
-        </Suspense>
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-[280px_1fr] gap-8">
+          {/* Filters Sidebar */}
+          <aside>
+            <ProductFilters categories={categories} onFilterChange={handleFilterChange} priceRange={priceRange} />
+          </aside>
+
+          {/* Products Grid */}
+          <div>
+            <div className="mb-4 text-sm text-muted-foreground">
+              {isLoading ? "Cargando..." : `${total} productos encontrados`}
+            </div>
+
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : products.length === 0 ? (
+              <div className="text-center py-20 glass-card rounded-2xl">
+                <p className="text-lg text-muted-foreground">
+                  No se encontraron productos con los filtros seleccionados.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </main>
 
       <Footer />
