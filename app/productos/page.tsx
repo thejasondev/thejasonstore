@@ -12,6 +12,8 @@ import { getCategories } from "@/lib/actions/categories"
 import type { Product, Category } from "@/lib/types"
 import { ProductCardSkeleton } from "@/components/skeletons"
 import { AlertCircle } from "lucide-react"
+import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
 
 export default function ProductsPage() {
   const searchParams = useSearchParams()
@@ -74,8 +76,16 @@ export default function ProductsPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <div className="mt-8 mb-4">
+      <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors mb-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Página principal
+      </Link>
+      </div>
+      <main className="flex-1 container mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             {searchQuery ? `Resultados para "${searchQuery}"` : "Todos los Productos"}

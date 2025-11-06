@@ -263,10 +263,6 @@ export default function CarritoPage() {
                     <div className="h-1.5 w-1.5 rounded-full bg-accent" />
                     <span>Atención personalizada</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-accent" />
-                    <span>Envío a todo el país</span>
-                  </div>
                 </div>
               </Card>
             </div>

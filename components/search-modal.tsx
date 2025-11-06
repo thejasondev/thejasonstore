@@ -168,7 +168,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                         {product.title}
                       </h4>
                       <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                        <CategoryIcon category={product.category} className="h-3 w-3" />
+                        <CategoryIcon iconName={product.category} className="h-3 w-3" />
                         {product.category}
                       </p>
                     </div>
