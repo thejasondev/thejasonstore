@@ -72,7 +72,7 @@ export default function CarritoPage() {
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1 container mx-auto px-4 py-8">
+        <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-accent border-r-transparent mb-4" />
@@ -89,9 +89,9 @@ export default function CarritoPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link 
             href="/productos" 
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors mb-4"
@@ -99,7 +99,7 @@ export default function CarritoPage() {
             <ArrowLeft className="h-4 w-4" />
             Continuar comprando
           </Link>
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">Tu Carrito</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">Tu Carrito</h1>
           <p className="text-muted-foreground">
             {itemCount === 0 ? 'No hay productos' : `${itemCount} ${itemCount === 1 ? 'producto' : 'productos'}`}
           </p>

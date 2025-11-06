@@ -62,7 +62,7 @@ export default async function HomePage() {
 
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="container mx-auto px-4 py-20 md:py-32 relative">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 md:py-32 relative">
             <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl animate-float" />
             <div
               className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float"
@@ -74,10 +74,10 @@ export default async function HomePage() {
                 <Sparkles className="h-4 w-4 text-accent" />
                 <span className="text-sm font-medium">Marketplace de Confianza</span>
               </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-balance">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 sm:mb-6 text-balance">
                 Miles de Productos, Un Solo Lugar
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed text-pretty max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed text-pretty max-w-2xl mx-auto px-4">
                 Conectamos vendedores verificados con compradores como tú. Descubre ofertas increíbles en electrónica,
                 moda, hogar, deportes y mucho más. Compra fácil y seguro por WhatsApp.
               </p>
@@ -104,9 +104,9 @@ export default async function HomePage() {
           </section>
 
           {/* Trust Indicators */}
-          <section className="border-y border-border/50 glass py-12">
-            <div className="container mx-auto px-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <section className="border-y border-border/50 glass py-8 sm:py-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
                 <div className="flex flex-col items-center text-center gap-3">
                   <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
                     <ShoppingBag className="h-6 w-6 text-accent" />
@@ -133,14 +133,14 @@ export default async function HomePage() {
           </section>
 
           {/* Categories */}
-          <section className="container mx-auto px-4 py-16">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Explora por Categoría</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Explora por Categoría</h2>
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
                 Encuentra exactamente lo que buscas navegando por nuestras categorías especializadas
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
               {CATEGORIES.map((category) => (
                 <Link
                   key={category.id}
@@ -159,7 +159,7 @@ export default async function HomePage() {
           </section>
 
           {/* Featured Products */}
-          <section className="container mx-auto px-4 py-16 bg-muted/30">
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 bg-muted/30">
             <div className="flex items-center justify-between mb-12">
               <div>
                 <h2 className="text-3xl md:text-4xl font-bold mb-2">Productos Destacados</h2>

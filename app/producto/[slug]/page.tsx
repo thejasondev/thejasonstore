@@ -75,8 +75,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <Header />
 
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-6xl mx-auto">
           {/* Image Gallery */}
           <div className="space-y-4">
             <div className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
@@ -115,8 +115,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <Badge variant="outline" className="mb-4">
                 {product.category}
               </Badge>
-              <h1 className="text-4xl font-bold mb-4 text-balance">{product.title}</h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">{product.description}</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-balance">{product.title}</h1>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{product.description}</p>
             </div>
 
             <div className="border-y border-border py-6">

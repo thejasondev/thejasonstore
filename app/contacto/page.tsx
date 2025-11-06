@@ -22,25 +22,26 @@ export default function ContactPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="m-8">
-      <Link 
+      
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mt-6 mb-4">
+          <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Página principal
-      </Link>
-      </div>
-      <main className="flex-1 container mx-auto">
+          </Link>
+        </div>
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">Contacto</h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">Contacto</h1>
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed px-4">
               Estamos aquí para ayudarte. Contáctanos por WhatsApp para cualquier consulta.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
             <Card>
               <CardHeader>
                 <MessageCircle className="h-8 w-8 mb-2 text-accent" />
@@ -78,7 +79,7 @@ export default function ContactPage() {
 
           <Card className="bg-accent/10 border-accent">
             <CardHeader>
-              <CardTitle className="text-2xl">¿Tienes alguna pregunta?</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl">¿Tienes alguna pregunta?</CardTitle>
               <CardDescription>Contáctanos por WhatsApp y te ayudaremos con lo que necesites</CardDescription>
             </CardHeader>
             <CardContent>

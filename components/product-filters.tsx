@@ -160,48 +160,78 @@ export function ProductFilters({ categories, onFilterChange, priceRange }: Produ
       <div className="lg:hidden">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full glass-card bg-transparent">
-              <Filter className="h-4 w-4 mr-2" />
-              Filtros
-              {activeFiltersCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-accent text-accent-foreground rounded-full text-xs">
-                  {activeFiltersCount}
-                </span>
-              )}
+            <Button 
+              variant="outline" 
+              className="w-full h-14 glass-card bg-gradient-to-r from-accent/10 to-accent/5 border-2 border-accent/20 hover:border-accent/40 hover:bg-accent/10 transition-all duration-300 shadow-sm"
+            >
+              <div className="flex items-center justify-center gap-3 w-full">
+                <div className="h-9 w-9 rounded-full bg-accent/20 flex items-center justify-center">
+                  <Filter className="h-5 w-5 text-accent" />
+                </div>
+                <span className="text-base font-semibold">Filtros de Búsqueda</span>
+                {activeFiltersCount > 0 && (
+                  <span className="ml-auto px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm font-bold shadow-sm">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </div>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="glass-effect w-full sm:max-w-md">
-            <SheetHeader>
-              <SheetTitle className="flex items-center justify-between">
-                <span>Filtros</span>
-                {activeFiltersCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={clearFilters}>
-                    <X className="h-4 w-4 mr-2" />
-                    Limpiar
-                  </Button>
-                )}
-              </SheetTitle>
-            </SheetHeader>
+          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl border-t-2 border-border/50 p-0">
+            <div className="flex flex-col h-full">
+              {/* Header fijo con diseño moderno */}
+              <div className="sticky top-0 bg-background/95 backdrop-blur-xl border-b border-border/50 px-6 py-4 z-10">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                      <Filter className="h-5 w-5 text-accent" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold">Filtros</h2>
+                      {activeFiltersCount > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          {activeFiltersCount} {activeFiltersCount === 1 ? 'filtro activo' : 'filtros activos'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {activeFiltersCount > 0 && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={clearFilters}
+                      className="text-accent hover:text-accent/80 hover:bg-accent/10"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Limpiar
+                    </Button>
+                  )}
+                </div>
+                {/* Indicador visual de scroll */}
+                <div className="w-12 h-1 bg-muted rounded-full mx-auto mt-2" />
+              </div>
 
-            <div className="mt-6 space-y-6">
-              {/* Same filters as desktop */}
-              <div className="space-y-2">
-                <Label>Buscar</Label>
+              {/* Contenido scrolleable con mejor espaciado */}
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+              {/* Búsqueda con diseño destacado */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-foreground"> Buscar Producto</Label>
                 <Input
                   placeholder="Nombre, descripción, SKU..."
                   value={filters.query || ""}
                   onChange={(e) => handleFilterChange("query", e.target.value)}
-                  className="glass-card"
+                  className="h-12 text-base glass-card border-2 focus:border-accent transition-colors"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Categoría</Label>
+              {/* Categoría con card */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-foreground"> Categoría</Label>
                 <Select
                   value={filters.category || "all"}
                   onValueChange={(value) => handleFilterChange("category", value === "all" ? undefined : value)}
                 >
-                  <SelectTrigger className="glass-card">
+                  <SelectTrigger className="h-12 text-base glass-card border-2 hover:border-accent transition-colors">
                     <SelectValue placeholder="Todas las categorías" />
                   </SelectTrigger>
                   <SelectContent>
@@ -218,8 +248,9 @@ export function ProductFilters({ categories, onFilterChange, priceRange }: Produ
                 </Select>
               </div>
 
-              <div className="space-y-4">
-                <Label>Rango de Precio</Label>
+              {/* Precio con card visual */}
+              <div className="space-y-4 p-4 rounded-xl bg-accent/5 border border-accent/20">
+                <Label className="text-sm font-semibold text-foreground"> Rango de Precio</Label>
                 <Slider
                   min={priceRange.min}
                   max={priceRange.max}
@@ -228,28 +259,40 @@ export function ProductFilters({ categories, onFilterChange, priceRange }: Produ
                   onValueChange={handlePriceChange}
                   className="py-4"
                 />
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>${priceValues[0]}</span>
-                  <span>${priceValues[1]}</span>
+                <div className="flex items-center justify-between">
+                  <div className="px-3 py-2 rounded-lg bg-background border border-border">
+                    <span className="text-sm font-semibold">${priceValues[0]}</span>
+                  </div>
+                  <div className="h-px flex-1 bg-border mx-2" />
+                  <div className="px-3 py-2 rounded-lg bg-background border border-border">
+                    <span className="text-sm font-semibold">${priceValues[1]}</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <Label htmlFor="in-stock-mobile">Solo en stock</Label>
-                <Switch
-                  id="in-stock-mobile"
-                  checked={filters.inStock || false}
-                  onCheckedChange={(checked) => handleFilterChange("inStock", checked)}
-                />
+              {/* Stock con card interactivo */}
+              <div className="p-4 rounded-xl bg-muted/50 border border-border hover:border-accent transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="in-stock-mobile" className="text-sm font-semibold cursor-pointer">Solo en stock</Label>
+                    <p className="text-xs text-muted-foreground mt-1">Productos disponibles</p>
+                  </div>
+                  <Switch
+                    id="in-stock-mobile"
+                    checked={filters.inStock || false}
+                    onCheckedChange={(checked) => handleFilterChange("inStock", checked)}
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Ordenar por</Label>
+              {/* Ordenar con diseño destacado */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-foreground"> Ordenar por</Label>
                 <Select
                   value={filters.sortBy || "newest"}
                   onValueChange={(value) => handleFilterChange("sortBy", value)}
                 >
-                  <SelectTrigger className="glass-card">
+                  <SelectTrigger className="h-12 text-base glass-card border-2 hover:border-accent transition-colors">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -262,10 +305,22 @@ export function ProductFilters({ categories, onFilterChange, priceRange }: Produ
                   </SelectContent>
                 </Select>
               </div>
+              </div>
 
-              <Button onClick={() => setIsOpen(false)} className="w-full">
-                Aplicar Filtros
-              </Button>
+              {/* Footer fijo con botón de aplicar */}
+              <div className="sticky bottom-0 bg-background/95 backdrop-blur-xl border-t border-border/50 p-6">
+                <Button 
+                  onClick={() => setIsOpen(false)} 
+                  className="w-full h-12 text-base font-semibold bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg"
+                >
+                  Aplicar Filtros
+                  {activeFiltersCount > 0 && (
+                    <span className="ml-2 px-2 py-0.5 bg-accent-foreground/20 rounded-full text-xs">
+                      {activeFiltersCount}
+                    </span>
+                  )}
+                </Button>
+              </div>
             </div>
           </SheetContent>
         </Sheet>

@@ -76,21 +76,22 @@ export default function ProductsPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="mt-8 mb-4">
-      <Link 
+      
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mt-6 mb-4">
+          <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Página principal
-      </Link>
-      </div>
-      <main className="flex-1 container mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          </Link>
+        </div>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
             {searchQuery ? `Resultados para "${searchQuery}"` : "Todos los Productos"}
           </h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed">
             Descubre miles de productos de calidad de vendedores confiables. Mejores precios y ofertas exclusivas.
           </p>
         </div>
@@ -111,7 +112,7 @@ export default function ProductsPage() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-[280px_1fr] gap-8">
+        <div className="grid lg:grid-cols-[280px_1fr] gap-6 lg:gap-8">
           {/* Filters Sidebar */}
           <aside>
             <ProductFilters categories={categories} onFilterChange={handleFilterChange} priceRange={priceRange} />
@@ -124,19 +125,19 @@ export default function ProductsPage() {
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-20 glass-card rounded-2xl">
-                <p className="text-lg text-muted-foreground">
+              <div className="text-center py-12 sm:py-20 glass-card rounded-2xl px-4">
+                <p className="text-base sm:text-lg text-muted-foreground">
                   No se encontraron productos con los filtros seleccionados.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
