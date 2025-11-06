@@ -101,7 +101,7 @@ export function ProductFilters({ categories, onFilterChange, priceRange }: Produ
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.slug}>
                   <div className="flex items-center gap-2">
-                    <CategoryIcon category={category.slug} className="h-4 w-4" />
+                    <CategoryIcon iconName={category.slug} className="h-4 w-4" />
                     {category.name}
                   </div>
                 </SelectItem>
@@ -209,7 +209,7 @@ export function ProductFilters({ categories, onFilterChange, priceRange }: Produ
                     {categories.map((category) => (
                       <SelectItem key={category.id} value={category.slug}>
                         <div className="flex items-center gap-2">
-                          <CategoryIcon category={category.slug} className="h-4 w-4" />
+                          <CategoryIcon iconName={category.slug} className="h-4 w-4" />
                           {category.name}
                         </div>
                       </SelectItem>
