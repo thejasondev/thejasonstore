@@ -1,13 +1,13 @@
 "use client"
 
-import type { Product } from "@/lib/types"
+import { useMemo, useState } from "react"
+import type { Category, Product } from "@/lib/types"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { deleteProduct } from "@/lib/actions/products"
-import { useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,11 +21,20 @@ import {
 
 interface ProductsTableProps {
   products: Product[]
+  categories?: Category[]
 }
 
-export function ProductsTable({ products }: ProductsTableProps) {
+export function ProductsTable({ products, categories }: ProductsTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const categoryLabelBySlug = useMemo(() => {
+    if (!categories || categories.length === 0) {
+      return new Map<string, string>()
+    }
+
+    return new Map(categories.map((category) => [category.slug, category.name]))
+  }, [categories])
 
   const handleDelete = async () => {
     if (!deleteId) return
@@ -69,7 +78,9 @@ export function ProductsTable({ products }: ProductsTableProps) {
                   <TableCell className="font-mono text-sm">{product.sku}</TableCell>
                   <TableCell className="font-medium">{product.title}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{product.category}</Badge>
+                    <Badge variant="outline">
+                      {categoryLabelBySlug.get(product.category)?.trim() || product.category}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     ${product.price.toFixed(2)} {product.currency}
@@ -86,7 +97,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/admin/productos/${product.id}`}>
+                        <Link href={`/admin/productos/${product.slug}`}>
                           <Pencil className="h-4 w-4" />
                           <span className="sr-only">Editar</span>
                         </Link>

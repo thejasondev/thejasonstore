@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { getProducts } from "@/lib/actions/products"
+import { getCategories } from "@/lib/actions/categories"
 import { ProductsTable } from "@/components/admin/products-table"
 import { InventoryDashboard } from "@/components/admin/inventory-dashboard"
 import { Button } from "@/components/ui/button"
@@ -18,7 +19,7 @@ export default async function AdminPage() {
     redirect("/auth/login")
   }
 
-  const products = await getProducts()
+  const [products, categories] = await Promise.all([getProducts(), getCategories()])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -36,14 +37,21 @@ export default async function AdminPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 truncate">Panel de Administración</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Gestiona tus productos y contenido</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Gestiona tus productos y categorías</p>
           </div>
-          <Button asChild className="w-full sm:w-auto shrink-0">
-            <Link href="/admin/productos/nuevo" className="inline-flex items-center justify-center">
-              <Plus className="mr-2 h-4 w-4" />
-              <span className="whitespace-nowrap">Nuevo Producto</span>
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:justify-end">
+            <Button asChild variant="outline" className="w-full sm:w-auto">
+              <Link href="/admin/categorias" className="inline-flex items-center justify-center">
+                <span className="whitespace-nowrap">Categorías</span>
+              </Link>
+            </Button>
+            <Button asChild className="w-full sm:w-auto">
+              <Link href="/admin/productos/nuevo" className="inline-flex items-center justify-center">
+                <Plus className="mr-2 h-4 w-4" />
+                <span className="whitespace-nowrap">Nuevo Producto</span>
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-6 sm:space-y-8">
@@ -54,7 +62,7 @@ export default async function AdminPage() {
 
           <div>
             <h2 className="text-xl sm:text-2xl font-bold mb-4">Productos</h2>
-            <ProductsTable products={products} />
+            <ProductsTable products={products} categories={categories} />
           </div>
         </div>
       </main>

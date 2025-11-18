@@ -7,7 +7,9 @@ import { WhatsAppFloat } from "@/components/whatsapp-float"
 import { ProductsCarousel } from "@/components/products-carousel"
 import { CategoryIcon } from "@/components/category-icon"
 import { getProducts } from "@/lib/actions/products"
-import { CATEGORIES, STORE_NAME, STORE_TAGLINE } from "@/lib/constants"
+import { getCategories } from "@/lib/actions/categories"
+import type { Category } from "@/lib/types"
+import { STORE_NAME, STORE_TAGLINE } from "@/lib/constants"
 
 // Forzar renderizado dinámico para soportar autenticación
 export const dynamic = 'force-dynamic'
@@ -25,12 +27,15 @@ export const metadata = {
 
 export default async function HomePage() {
   let products: any[] = []
+  let categories: Category[] = []
   let hasError = false
 
   try {
-    products = await getProducts()
+    const [productsData, categoriesData] = await Promise.all([getProducts(), getCategories()])
+    products = productsData
+    categories = categoriesData
   } catch (error) {
-    console.error("[v0] Error loading products:", error)
+    console.error("[v0] Error loading home data:", error)
     hasError = true
   }
 
@@ -140,22 +145,31 @@ export default async function HomePage() {
                 Encuentra exactamente lo que buscas navegando por nuestras categorías especializadas
               </p>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-              {CATEGORIES.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/productos?categoria=${category.slug}`}
-                  className="flex flex-col items-center justify-center p-6 rounded-lg glass-card glass-hover group"
-                  aria-label={`Ver productos de ${category.name}`}
-                >
-                  <CategoryIcon
-                    iconName={category.icon || "Laptop"}
-                    className="h-8 w-8 mb-3 group-hover:text-accent transition-all group-hover:scale-110"
-                  />
-                  <span className="text-sm font-medium text-center">{category.name}</span>
-                </Link>
-              ))}
-            </div>
+
+            {categories.length === 0 ? (
+              <div className="glass-card rounded-2xl p-8 text-center">
+                <p className="text-muted-foreground">
+                  Aún no hay categorías configuradas. Crea nuevas categorías en Supabase para comenzar a mostrarlas aquí.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+                {categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    href={`/categoria/${category.slug}`}
+                    className="flex flex-col items-center justify-center p-6 rounded-lg glass-card glass-hover group"
+                    aria-label={`Ver productos de ${category.name}`}
+                  >
+                    <CategoryIcon
+                      iconName={category.icon || category.slug}
+                      className="h-8 w-8 mb-3 group-hover:text-accent transition-all group-hover:scale-110"
+                    />
+                    <span className="text-sm font-medium text-center">{category.name}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </section>
 
           {/* Featured Products */}

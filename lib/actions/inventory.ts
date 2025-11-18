@@ -20,7 +20,7 @@ export interface LowStockProduct {
   title: string
   sku: string
   stock: number
-  low_stock_threshold: number
+  low_stock_threshold?: number | null
 }
 
 /**
@@ -81,14 +81,42 @@ export async function getInventoryHistory(productId: string): Promise<InventoryH
 export async function getLowStockProducts(): Promise<LowStockProduct[]> {
   const supabase = await createClient()
 
-  const { data, error } = await supabase.rpc("get_low_stock_products")
+  const LOW_STOCK_DEFAULT_THRESHOLD = 5
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, title, sku, stock, low_stock_threshold")
 
   if (error) {
+    const missingThresholdColumn =
+      error.code === "42703" ||
+      error.message?.toLowerCase().includes("low_stock_threshold") ||
+      error.details?.toLowerCase().includes("low_stock_threshold")
+
+    if (missingThresholdColumn) {
+      console.warn("[v0] low_stock_threshold column missing, falling back to default threshold")
+      const fallback = await supabase.from("products").select("id, title, sku, stock")
+
+      if (fallback.error) {
+        console.error("[v0] Error fetching low stock products (fallback):", fallback.error)
+        throw new Error("Failed to fetch low stock products")
+      }
+
+      return (fallback.data ?? []).filter((product) => {
+        const stock = product.stock ?? 0
+        return stock <= LOW_STOCK_DEFAULT_THRESHOLD
+      })
+    }
+
     console.error("[v0] Error fetching low stock products:", error)
     throw new Error("Failed to fetch low stock products")
   }
 
-  return data || []
+  return (data ?? []).filter((product) => {
+    const threshold = product.low_stock_threshold ?? LOW_STOCK_DEFAULT_THRESHOLD
+    const stock = product.stock ?? 0
+    return stock <= threshold
+  })
 }
 
 /**
@@ -97,7 +125,11 @@ export async function getLowStockProducts(): Promise<LowStockProduct[]> {
 export async function getOutOfStockProducts(): Promise<any[]> {
   const supabase = await createClient()
 
-  const { data, error } = await supabase.rpc("get_out_of_stock_products")
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, title, sku, stock, updated_at")
+    .lte("stock", 0)
+    .order("updated_at", { ascending: false })
 
   if (error) {
     console.error("[v0] Error fetching out of stock products:", error)

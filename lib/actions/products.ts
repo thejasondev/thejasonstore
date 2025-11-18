@@ -30,6 +30,31 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 /**
+ * Fetches a single product by id
+ */
+export async function getProductById(id: string): Promise<Product | null> {
+  try {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase.from("products").select("*").eq("id", id).single()
+
+    if (error) {
+      if (error.code === "42P01" || error.message.includes("does not exist")) {
+        console.log("[v0] Products table doesn't exist yet. Please run the SQL scripts.")
+        return null
+      }
+      console.error("[v0] Error fetching product by id:", error)
+      return null
+    }
+
+    return data
+  } catch (error) {
+    console.error("[v0] Unexpected error fetching product by id:", error)
+    return null
+  }
+}
+
+/**
  * Fetches a single product by slug
  */
 export async function getProductBySlug(slug: string): Promise<Product | null> {

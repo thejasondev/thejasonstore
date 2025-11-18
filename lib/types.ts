@@ -9,6 +9,7 @@ export interface Product {
   stock: number
   images: string[]
   category: string
+  category_id?: string | null
   created_at: string
   updated_at?: string
 }
