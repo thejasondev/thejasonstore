@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { AlertTriangle, Package } from "lucide-react"
 import { getLowStockProducts, getOutOfStockProducts } from "@/lib/actions/inventory"
 import type { LowStockProduct } from "@/lib/actions/inventory"
@@ -73,7 +74,11 @@ export function InventoryDashboard() {
         </CardHeader>
         <CardContent>
           {lowStockProducts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No hay productos con stock bajo</p>
+            <EmptyState
+              title="Sin alertas de stock bajo"
+              description="Por ahora todos los productos tienen niveles de stock saludables. Revisa este panel con frecuencia para anticiparte a futuras reposiciones."
+              className="px-4 py-6 sm:px-6 sm:py-8"
+            />
           ) : (
             <div className="space-y-2">
               {lowStockProducts.slice(0, 5).map((product) => (
@@ -108,7 +113,11 @@ export function InventoryDashboard() {
         </CardHeader>
         <CardContent>
           {outOfStockProducts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No hay productos agotados</p>
+            <EmptyState
+              title="Sin productos agotados"
+              description="Actualmente no hay artículos con stock en cero. Usa este panel para reaccionar rápido cuando algún producto se agote."
+              className="px-4 py-6 sm:px-6 sm:py-8"
+            />
           ) : (
             <div className="space-y-2">
               {outOfStockProducts.slice(0, 5).map((product) => (

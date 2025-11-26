@@ -3,8 +3,9 @@
 import type React from "react"
 
 import { useState, useEffect, useCallback } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { EmptyState } from "@/components/ui/empty-state"
 import { ProductCard } from "@/components/product-card"
 import type { Product } from "@/lib/types"
 
@@ -102,9 +103,11 @@ export function ProductsCarousel({ products, autoPlayInterval = 5000 }: Products
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-12 glass-card rounded-lg">
-        <p className="text-muted-foreground">No hay productos disponibles</p>
-      </div>
+      <EmptyState
+        icon={<ShoppingBag className="h-6 w-6 text-accent" />}
+        title="Aún no hay productos destacados"
+        description="Pronto verás aquí una selección de artículos recomendados. Mientras tanto puedes explorar todos los productos disponibles en la tienda."
+      />
     )
   }
 

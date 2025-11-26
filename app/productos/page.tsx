@@ -11,7 +11,9 @@ import { searchProductsAdvanced, getPriceRange } from "@/lib/actions/products"
 import { getCategories } from "@/lib/actions/categories"
 import type { Product, Category } from "@/lib/types"
 import { ProductCardSkeleton } from "@/components/skeletons"
-import { AlertCircle } from "lucide-react"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Button } from "@/components/ui/button"
+import { AlertCircle, Search } from "lucide-react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
@@ -131,11 +133,15 @@ export default function ProductsPage() {
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-12 sm:py-20 glass-card rounded-2xl px-4">
-                <p className="text-base sm:text-lg text-muted-foreground">
-                  No se encontraron productos con los filtros seleccionados.
-                </p>
-              </div>
+              <EmptyState
+                icon={<Search className="h-6 w-6 text-accent" />}
+                title="No se encontraron productos"
+                description="No hay productos que coincidan con la búsqueda y los filtros seleccionados. Prueba ajustar los filtros o ver todo el catálogo disponible."
+              >
+                <Button asChild variant="outline" className="w-full sm:w-auto">
+                  <Link href="/productos">Limpiar filtros</Link>
+                </Button>
+              </EmptyState>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {products.map((product) => (
