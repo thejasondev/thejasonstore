@@ -1,14 +1,16 @@
-"use client"
+"use client";
 
-import { MessageCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { WHATSAPP_PHONE } from "@/lib/constants"
+import { MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { WHATSAPP_PHONE } from "@/lib/constants";
 
 export function WhatsAppFloat() {
   const handleClick = () => {
-    const message = encodeURIComponent("Hola, me gustaría obtener más información sobre sus productos.")
-    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${message}`, "_blank")
-  }
+    const message = encodeURIComponent(
+      "Hola, me gustaría obtener más información sobre sus productos The Jason Store."
+    );
+    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${message}`, "_blank");
+  };
 
   return (
     <Button
@@ -19,5 +21,5 @@ export function WhatsAppFloat() {
     >
       <MessageCircle className="h-6 w-6" />
     </Button>
-  )
+  );
 }

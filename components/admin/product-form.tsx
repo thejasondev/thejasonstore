@@ -1,96 +1,123 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { createProduct, updateProduct } from "@/lib/actions/products"
-import { createClient as createSupabaseClient } from "@/lib/supabase/client"
-import type { Category, Product } from "@/lib/types"
-import { normalizeSlug } from "@/lib/utils/slug"
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { createProduct, updateProduct } from "@/lib/actions/products";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
+import type { Category, Product } from "@/lib/types";
+import { normalizeSlug } from "@/lib/utils/slug";
+import { ProductImagesUploader } from "@/components/admin/product-images-uploader";
 
 interface ProductFormProps {
-  product?: Product
+  product?: Product;
 }
 
 export function ProductForm({ product }: ProductFormProps) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [categories, setCategories] = useState<Category[]>([])
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
-  const [categoryError, setCategoryError] = useState<string | null>(null)
-  const [categoryValue, setCategoryValue] = useState<string>(product?.category ?? "")
-  const hasNormalizedCategory = useRef(false)
-  const isEditing = Boolean(product)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [categoryValue, setCategoryValue] = useState<string>(
+    product?.category ?? ""
+  );
+  const [images, setImages] = useState<string[]>(
+    product?.images?.length ? product.images : []
+  );
+  const hasNormalizedCategory = useRef(false);
+  const isEditing = Boolean(product);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsLoadingCategories(true)
-      setCategoryError(null)
+      setIsLoadingCategories(true);
+      setCategoryError(null);
 
       try {
-        const supabase = createSupabaseClient()
+        const supabase = createSupabaseClient();
         const { data, error } = await supabase
           .from("categories")
           .select("*")
           .eq("is_active", true)
-          .order("display_order", { ascending: true })
+          .order("display_order", { ascending: true });
 
         if (error) {
-          throw error
+          throw error;
         }
 
-        setCategories(data ?? [])
+        setCategories(data ?? []);
       } catch (err) {
-        console.error("[v0] Error fetching categories:", err)
-        setCategoryError("No se pudieron cargar las categorías. Verifica tu conexión con Supabase.")
+        console.error("[v0] Error fetching categories:", err);
+        setCategoryError(
+          "No se pudieron cargar las categorías. Verifica tu conexión con Supabase."
+        );
       } finally {
-        setIsLoadingCategories(false)
+        setIsLoadingCategories(false);
       }
-    }
+    };
 
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
-    if (!product?.category || categories.length === 0 || hasNormalizedCategory.current) {
-      return
+    if (
+      !product?.category ||
+      categories.length === 0 ||
+      hasNormalizedCategory.current
+    ) {
+      return;
     }
 
-    const matchBySlug = categories.find((category) => category.slug === product.category)
-    const matchByName = categories.find((category) => category.name.toLowerCase() === product.category.toLowerCase())
+    const matchBySlug = categories.find(
+      (category) => category.slug === product.category
+    );
+    const matchByName = categories.find(
+      (category) =>
+        category.name.toLowerCase() === product.category.toLowerCase()
+    );
 
-    const resolvedValue = matchBySlug?.slug ?? matchByName?.slug ?? product.category
-    setCategoryValue(resolvedValue)
-    hasNormalizedCategory.current = true
-  }, [categories, product?.category])
+    const resolvedValue =
+      matchBySlug?.slug ?? matchByName?.slug ?? product.category;
+    setCategoryValue(resolvedValue);
+    hasNormalizedCategory.current = true;
+  }, [categories, product?.category]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-    const formData = new FormData(e.currentTarget)
-    const titleValue = (formData.get("title") as string) ?? ""
-    const rawSlugValue = (formData.get("slug") as string) ?? titleValue
-    const normalizedSlug = normalizeSlug(rawSlugValue || titleValue)
-    const categorySlug = (formData.get("category") as string) || categoryValue
+    const formData = new FormData(e.currentTarget);
+    const titleValue = (formData.get("title") as string) ?? "";
+    const rawSlugValue = (formData.get("slug") as string) ?? titleValue;
+    const normalizedSlug = normalizeSlug(rawSlugValue || titleValue);
+    const categorySlug = (formData.get("category") as string) || categoryValue;
 
     if (!categorySlug) {
-      setError("Selecciona una categoría válida")
-      setIsLoading(false)
-      return
+      setError("Selecciona una categoría válida");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const selectedCategory = categories.find((category) => category.slug === categorySlug)
+      const selectedCategory = categories.find(
+        (category) => category.slug === categorySlug
+      );
 
       const baseProductData = {
         sku: formData.get("sku") as string,
@@ -100,25 +127,31 @@ export function ProductForm({ product }: ProductFormProps) {
         price: Number.parseFloat(formData.get("price") as string),
         currency: product?.currency ?? "USD",
         stock: Number.parseInt(formData.get("stock") as string),
-        images: product?.images?.length ? product.images : ["/placeholder.svg?height=600&width=600"],
+        images:
+          images.length > 0
+            ? images
+            : ["/placeholder.svg?height=600&width=600"],
         category: selectedCategory?.slug ?? categorySlug,
         category_id: selectedCategory?.id ?? product?.category_id ?? null,
-      }
+        is_featured: formData.get("is_featured") === "on",
+      };
 
       if (isEditing && product?.id) {
-        await updateProduct(product.id, baseProductData)
+        await updateProduct(product.id, baseProductData);
       } else {
-        await createProduct(baseProductData)
+        await createProduct(baseProductData);
       }
-      router.push("/admin")
-      router.refresh()
+      router.push("/admin");
+      router.refresh();
     } catch (err) {
-      console.error("[v0] Error creating product:", err)
-      setError(err instanceof Error ? err.message : "Error al crear el producto")
+      console.error("[v0] Error creating product:", err);
+      setError(
+        err instanceof Error ? err.message : "Error al crear el producto"
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card>
@@ -130,17 +163,35 @@ export function ProductForm({ product }: ProductFormProps) {
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="sku">SKU</Label>
-              <Input id="sku" name="sku" placeholder="PROD-001" required defaultValue={product?.sku} />
+              <Input
+                id="sku"
+                name="sku"
+                placeholder="PROD-001"
+                required
+                defaultValue={product?.sku}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="slug">Slug (URL)</Label>
-              <Input id="slug" name="slug" placeholder="producto-ejemplo" required defaultValue={product?.slug} />
+              <Input
+                id="slug"
+                name="slug"
+                placeholder="producto-ejemplo"
+                required
+                defaultValue={product?.slug}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="title">Título</Label>
-              <Input id="title" name="title" placeholder="Nombre del producto" required defaultValue={product?.title} />
+              <Input
+                id="title"
+                name="title"
+                placeholder="Nombre del producto"
+                required
+                defaultValue={product?.title}
+              />
             </div>
 
             <div className="grid gap-2">
@@ -171,7 +222,14 @@ export function ProductForm({ product }: ProductFormProps) {
 
               <div className="grid gap-2">
                 <Label htmlFor="stock">Stock</Label>
-                <Input id="stock" name="stock" type="number" placeholder="0" required defaultValue={product?.stock} />
+                <Input
+                  id="stock"
+                  name="stock"
+                  type="number"
+                  placeholder="0"
+                  required
+                  defaultValue={product?.stock}
+                />
               </div>
             </div>
 
@@ -185,7 +243,13 @@ export function ProductForm({ product }: ProductFormProps) {
                 disabled={isLoadingCategories || categories.length === 0}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={isLoadingCategories ? "Cargando categorías..." : "Selecciona una categoría"} />
+                  <SelectValue
+                    placeholder={
+                      isLoadingCategories
+                        ? "Cargando categorías..."
+                        : "Selecciona una categoría"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {isLoadingCategories ? (
@@ -205,7 +269,39 @@ export function ProductForm({ product }: ProductFormProps) {
                   )}
                 </SelectContent>
               </Select>
-              {categoryError && <p className="text-sm text-destructive">{categoryError}</p>}
+              {categoryError && (
+                <p className="text-sm text-destructive">{categoryError}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Imágenes del Producto
+              </label>
+              <ProductImagesUploader
+                value={images}
+                onChange={setImages}
+                maxImages={4}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2 rounded-lg border border-border p-4 bg-muted/30">
+              <Checkbox
+                id="is_featured"
+                name="is_featured"
+                defaultChecked={product?.is_featured || false}
+              />
+              <div className="grid gap-1.5 leading-none">
+                <Label
+                  htmlFor="is_featured"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Producto Destacado
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Los productos destacados se muestran en la página principal
+                </p>
+              </div>
             </div>
           </div>
 
@@ -215,12 +311,17 @@ export function ProductForm({ product }: ProductFormProps) {
             <Button type="submit" disabled={isLoading} className="flex-1">
               {isLoading ? "Guardando..." : "Guardar Producto"}
             </Button>
-            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={isLoading}
+            >
               Cancelar
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

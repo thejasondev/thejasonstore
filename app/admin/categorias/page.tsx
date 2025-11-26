@@ -1,21 +1,20 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { CategoriesAdmin } from "@/components/admin/categories-admin"
-import { getAllCategories } from "@/lib/actions/categories"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { Header } from "@/components/header";
+import { CategoriesAdmin } from "@/components/admin/categories-admin";
+import { getAllCategories } from "@/lib/actions/categories";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default async function AdminCategoriesPage() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.getUser()
+  const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
-    redirect("/auth/login")
+    redirect("/auth/login");
   }
 
-  const categories = await getAllCategories()
+  const categories = await getAllCategories();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -33,17 +32,17 @@ export default async function AdminCategoriesPage() {
         </div>
 
         <div className="flex flex-col gap-4 mb-6">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Gestión de categorías</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+            Gestión de categorías
+          </h1>
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl">
-            Crea y administra las categorías que organizan tus productos. Estas categorías se usan en el inicio, filtros
-            y páginas de detalle.
+            Crea y administra las categorías que organizan tus productos. Estas
+            categorías se usan en el inicio, filtros y páginas de detalle.
           </p>
         </div>
 
         <CategoriesAdmin categories={categories} />
       </main>
-
-      <Footer />
     </div>
-  )
+  );
 }

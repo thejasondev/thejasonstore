@@ -1,27 +1,31 @@
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import type { Metadata } from "next"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { WhatsAppFloat } from "@/components/whatsapp-float"
-import { getProductBySlug } from "@/lib/actions/products"
-import { Badge } from "@/components/ui/badge"
-import { WhatsAppButton } from "@/components/whatsapp-button"
-import { ProductJsonLd } from "@/components/json-ld"
-import { STORE_NAME } from "@/lib/constants"
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import type { Metadata } from "next";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { WhatsAppFloat } from "@/components/whatsapp-float";
+import { getProductBySlug } from "@/lib/actions/products";
+import { Badge } from "@/components/ui/badge";
+import { WhatsAppButton } from "@/components/whatsapp-button";
+import { ProductJsonLd } from "@/components/json-ld";
+import { STORE_NAME } from "@/lib/constants";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface ProductPageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { slug } = await params
-  const product = await getProductBySlug(slug)
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
       title: "Producto no encontrado",
-    }
+    };
   }
 
   return {
@@ -56,18 +60,18 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     alternates: {
       canonical: `/producto/${slug}`,
     },
-  }
+  };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params
-  const product = await getProductBySlug(slug)
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
-    notFound()
+    notFound();
   }
 
-  const inStock = product.stock > 0
+  const inStock = product.stock > 0;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -76,12 +80,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <Header />
 
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mt-2 mb-4">
+          <Link
+            href="/productos"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver a productos
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-6xl mx-auto">
           {/* Image Gallery */}
           <div className="space-y-4">
             <div className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
               <Image
-                src={product.images[0] || "/placeholder.svg?height=600&width=600"}
+                src={
+                  product.images[0] || "/placeholder.svg?height=600&width=600"
+                }
                 alt={product.title}
                 fill
                 className="object-cover"
@@ -115,17 +131,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <Badge variant="outline" className="mb-4">
                 {product.category}
               </Badge>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-balance">{product.title}</h1>
-              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">{product.description}</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-balance">
+                {product.title}
+              </h1>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                {product.description}
+              </p>
             </div>
 
             <div className="border-y border-border py-6">
               <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-4xl font-bold">${product.price.toFixed(2)}</span>
-                <span className="text-lg text-muted-foreground">{product.currency}</span>
+                <span className="text-4xl font-bold">
+                  ${product.price.toFixed(2)}
+                </span>
+                <span className="text-lg text-muted-foreground">
+                  {product.currency}
+                </span>
               </div>
               {inStock ? (
-                <Badge variant="outline" className="bg-accent/10 text-accent border-accent">
+                <Badge
+                  variant="outline"
+                  className="bg-accent/10 text-accent border-accent"
+                >
                   En stock ({product.stock} disponibles)
                 </Badge>
               ) : (
@@ -156,7 +183,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Disponibilidad:</dt>
-                  <dd className="font-medium">{inStock ? `${product.stock} unidades` : "Agotado"}</dd>
+                  <dd className="font-medium">
+                    {inStock ? `${product.stock} unidades` : "Agotado"}
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -167,5 +196,5 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <Footer />
       <WhatsAppFloat />
     </div>
-  )
+  );
 }

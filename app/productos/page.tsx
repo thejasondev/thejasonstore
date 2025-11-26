@@ -1,88 +1,102 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { WhatsAppFloat } from "@/components/whatsapp-float"
-import { ProductCard } from "@/components/product-card"
-import { ProductFilters, type FilterState } from "@/components/product-filters"
-import { searchProductsAdvanced, getPriceRange } from "@/lib/actions/products"
-import { getCategories } from "@/lib/actions/categories"
-import type { Product, Category } from "@/lib/types"
-import { ProductCardSkeleton } from "@/components/skeletons"
-import { EmptyState } from "@/components/ui/empty-state"
-import { Button } from "@/components/ui/button"
-import { AlertCircle, Search } from "lucide-react"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { WhatsAppFloat } from "@/components/whatsapp-float";
+import { ProductCard } from "@/components/product-card";
+import { ProductFilters, type FilterState } from "@/components/product-filters";
+import { searchProductsAdvanced, getPriceRange } from "@/lib/actions/products";
+import { getCategories } from "@/lib/actions/categories";
+import type { Product, Category } from "@/lib/types";
+import { ProductCardSkeleton } from "@/components/skeletons";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Search } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { ProductQuickView } from "@/components/product-quick-view";
 
 export default function ProductsPage() {
-  const searchParams = useSearchParams()
-  const searchQuery = searchParams.get("q")
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q");
 
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 })
-  const [isLoading, setIsLoading] = useState(true)
-  const [total, setTotal] = useState(0)
-  const [error, setError] = useState<string | null>(null)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
+    null
+  );
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   useEffect(() => {
-    loadInitialData()
-  }, [searchQuery])
+    loadInitialData();
+  }, [searchQuery]);
 
   const loadInitialData = async () => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
     try {
       const [productsData, categoriesData, priceData] = await Promise.all([
         searchProductsAdvanced(searchQuery ? { query: searchQuery } : {}),
         getCategories(),
         getPriceRange(),
-      ])
-      setProducts(productsData.products)
-      setTotal(productsData.total)
-      setCategories(categoriesData)
-      setPriceRange(priceData)
+      ]);
+      setProducts(productsData.products);
+      setTotal(productsData.total);
+      setCategories(categoriesData);
+      setPriceRange(priceData);
 
       if (productsData.total === 0) {
-        setError("No hay productos disponibles. Por favor, ejecuta el script SQL de configuración.")
+        setError(
+          "No hay productos disponibles. Por favor, ejecuta el script SQL de configuración."
+        );
       }
     } catch (error) {
-      console.error("[v0] Error loading data:", error)
-      setError("Error al cargar los productos. Por favor, verifica la configuración de la base de datos.")
+      console.error("[v0] Error loading data:", error);
+      setError(
+        "Error al cargar los productos. Por favor, verifica la configuración de la base de datos."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleFilterChange = async (filters: FilterState) => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
     try {
       const result = await searchProductsAdvanced({
         ...filters,
         query: searchQuery || filters.query,
-      })
-      setProducts(result.products)
-      setTotal(result.total)
+      });
+      setProducts(result.products);
+      setTotal(result.total);
     } catch (error) {
-      console.error("[v0] Error filtering products:", error)
-      setError("Error al filtrar productos.")
+      console.error("[v0] Error filtering products:", error);
+      setError("Error al filtrar productos.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
+  const handleQuickView = (product: Product) => {
+    setQuickViewProduct(product);
+    setIsQuickViewOpen(true);
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      
-      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
+
+      <main className="flex-1 container mx-auto mb-4 px-4 sm:px-6 lg:px-8">
         <div className="mt-6 mb-4">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -91,10 +105,13 @@ export default function ProductsPage() {
         </div>
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
-            {searchQuery ? `Resultados para "${searchQuery}"` : "Todos los Productos"}
+            {searchQuery
+              ? `Resultados para "${searchQuery}"`
+              : "Todos los Productos"}
           </h1>
           <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed">
-            Descubre miles de productos de calidad de vendedores confiables. Mejores precios y ofertas exclusivas.
+            Descubre miles de productos de calidad de vendedores confiables.
+            Mejores precios y ofertas exclusivas.
           </p>
         </div>
 
@@ -106,8 +123,11 @@ export default function ProductsPage() {
                 <h3 className="font-semibold mb-1">Configuración Requerida</h3>
                 <p className="text-sm text-muted-foreground">{error}</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Ejecuta el script <code className="bg-muted px-2 py-1 rounded">scripts/SETUP_FINAL.sql</code> en tu
-                  Supabase SQL Editor.
+                  Ejecuta el script{" "}
+                  <code className="bg-muted px-2 py-1 rounded">
+                    scripts/SETUP_FINAL.sql
+                  </code>{" "}
+                  en tu Supabase SQL Editor.
                 </p>
               </div>
             </div>
@@ -117,7 +137,11 @@ export default function ProductsPage() {
         <div className="grid lg:grid-cols-[280px_1fr] gap-6 lg:gap-8">
           {/* Filters Sidebar */}
           <aside>
-            <ProductFilters categories={categories} onFilterChange={handleFilterChange} priceRange={priceRange} />
+            <ProductFilters
+              categories={categories}
+              onFilterChange={handleFilterChange}
+              priceRange={priceRange}
+            />
           </aside>
 
           {/* Products Grid */}
@@ -145,7 +169,11 @@ export default function ProductsPage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onQuickView={handleQuickView}
+                  />
                 ))}
               </div>
             )}
@@ -155,6 +183,13 @@ export default function ProductsPage() {
 
       <Footer />
       <WhatsAppFloat />
+
+      {/* Quick View Modal */}
+      <ProductQuickView
+        product={quickViewProduct}
+        open={isQuickViewOpen}
+        onOpenChange={setIsQuickViewOpen}
+      />
     </div>
-  )
+  );
 }
