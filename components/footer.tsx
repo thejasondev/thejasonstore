@@ -18,9 +18,9 @@ export function Footer() {
     <footer className="border-t border-border bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-8">
           {/* Brand Section */}
-          <div className="lg:col-span-2">
+          <div className="col-span-2 md:col-span-1 lg:col-span-2">
             <Link href="/" className="inline-block mb-4 group">
               <h3 className="text-2xl font-bold group-hover:text-accent transition-colors">
                 {STORE_NAME}
