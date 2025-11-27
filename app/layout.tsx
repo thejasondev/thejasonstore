@@ -1,17 +1,24 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { Toaster } from "sonner"
-import { CartProvider } from "@/lib/context/cart-context"
-import { STORE_NAME, STORE_DESCRIPTION, STORE_KEYWORDS, STORE_TAGLINE } from "@/lib/constants"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "sonner";
+import { CartProvider } from "@/lib/context/cart-context";
+import {
+  STORE_NAME,
+  STORE_DESCRIPTION,
+  STORE_KEYWORDS,
+  STORE_TAGLINE,
+} from "@/lib/constants";
+import "./globals.css";
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://thejasonstore.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://thejasonstore.vercel.app"
+  ),
   title: {
     default: `${STORE_NAME} | ${STORE_TAGLINE} - Marketplace Online`,
     template: `%s | ${STORE_NAME}`,
@@ -91,35 +98,45 @@ export const metadata: Metadata = {
       "es-ES": "/",
     },
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="es">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className={`font-sans antialiased`}>
         <CartProvider>
           {children}
           <Analytics />
-          <Toaster 
+          <Toaster
             position="bottom-right"
             expand={true}
-            richColors
             closeButton
             toastOptions={{
               duration: 4000,
-              className: 'glass-card',
+              className: "glass-card",
+              classNames: {
+                success: "bg-accent text-accent-foreground border-accent",
+                error: "bg-black text-white border-border",
+                info: "bg-muted/50 text-foreground",
+                warning:
+                  "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+              },
             }}
           />
         </CartProvider>
       </body>
     </html>
-  )
+  );
 }

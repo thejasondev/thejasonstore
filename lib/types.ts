@@ -50,7 +50,7 @@ export interface Banner {
   cta_link?: string;
   cta_style?: "primary" | "secondary" | "outline";
 
-  position: "hero" | "slider" | "info" | "sidebar";
+  position: "hero" | "slider" | "info";
   display_order: number;
   is_active: boolean;
 

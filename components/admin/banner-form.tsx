@@ -41,9 +41,9 @@ export function BannerForm({ banner, mode }: BannerFormProps) {
   const [ctaStyle, setCtaStyle] = useState<"primary" | "secondary" | "outline">(
     banner?.cta_style || "primary"
   );
-  const [position, setPosition] = useState<
-    "hero" | "slider" | "info" | "sidebar"
-  >(banner?.position || "hero");
+  const [position, setPosition] = useState<"hero" | "slider" | "info">(
+    banner?.position === "sidebar" ? "hero" : banner?.position || "hero"
+  );
   const [isActive, setIsActive] = useState(banner?.is_active ?? true);
   const [startDate, setStartDate] = useState(banner?.start_date || "");
   const [endDate, setEndDate] = useState(banner?.end_date || "");
@@ -62,6 +62,22 @@ export function BannerForm({ banner, mode }: BannerFormProps) {
         throw new Error("La imagen es requerida");
       }
 
+      // Convert datetime-local to ISO format for proper storage
+      const startDateISO =
+        startDate && startDate.trim() !== ""
+          ? new Date(startDate).toISOString()
+          : undefined;
+      const endDateISO =
+        endDate && endDate.trim() !== ""
+          ? new Date(endDate).toISOString()
+          : undefined;
+
+      console.log("[BANNER FORM] Saving banner with dates:");
+      console.log("[BANNER FORM] - start_date (input):", startDate);
+      console.log("[BANNER FORM] - start_date (ISO):", startDateISO);
+      console.log("[BANNER FORM] - end_date (input):", endDate);
+      console.log("[BANNER FORM] - end_date (ISO):", endDateISO);
+
       const bannerData = {
         title: title.trim(),
         description: description.trim() || undefined,
@@ -73,8 +89,8 @@ export function BannerForm({ banner, mode }: BannerFormProps) {
         position,
         is_active: isActive,
         display_order: banner?.display_order || 0,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
+        start_date: startDateISO,
+        end_date: endDateISO,
       };
 
       if (mode === "edit" && banner?.id) {
@@ -224,7 +240,6 @@ export function BannerForm({ banner, mode }: BannerFormProps) {
                 <SelectItem value="hero">Hero (Banner Principal)</SelectItem>
                 <SelectItem value="slider">Slider (Carrusel)</SelectItem>
                 <SelectItem value="info">Info (Banner Informativo)</SelectItem>
-                <SelectItem value="sidebar">Sidebar (Barra Lateral)</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -76,9 +76,21 @@ export function ImageUploader({
         setPreview(imageUrl);
       } catch (err) {
         console.error("Upload error:", err);
-        setError(
-          err instanceof Error ? err.message : "Error al subir la imagen"
-        );
+        let errorMessage = "Error al subir la imagen";
+
+        if (err instanceof Error) {
+          if (
+            err.message.includes("Body exceeded") ||
+            err.message.includes("limit")
+          ) {
+            errorMessage =
+              "La imagen es demasiado pesada para el servidor. Intenta comprimirla (ej. TinyPNG) o usa una imagen más ligera.";
+          } else {
+            errorMessage = err.message;
+          }
+        }
+
+        setError(errorMessage);
         setPreview(null);
       } finally {
         setUploading(false);
@@ -147,11 +159,11 @@ export function ImageUploader({
             type="file"
             accept="image/*"
             onChange={handleFileInput}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
             disabled={uploading}
           />
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center pointer-events-none">
             {uploading ? (
               <>
                 <Loader2 className="h-12 w-12 animate-spin text-accent" />
@@ -170,7 +182,7 @@ export function ImageUploader({
                     Arrastra una imagen aquí o click para seleccionar
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    JPG, PNG o WebP (máx. 5MB)
+                    Recomendado: Imágenes comprimidas (WebP/JPG)
                   </p>
                 </div>
               </>

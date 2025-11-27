@@ -77,9 +77,21 @@ export function ProductImagesUploader({
         onChange(newImages);
       } catch (err) {
         console.error("Upload error:", err);
-        setError(
-          err instanceof Error ? err.message : "Error al subir la imagen"
-        );
+        let errorMessage = "Error al subir la imagen";
+
+        if (err instanceof Error) {
+          if (
+            err.message.includes("Body exceeded") ||
+            err.message.includes("limit")
+          ) {
+            errorMessage =
+              "Imagen demasiado pesada. Por favor comprímela antes de subirla.";
+          } else {
+            errorMessage = err.message;
+          }
+        }
+
+        setError(errorMessage);
       } finally {
         setUploading(null);
         setTimeout(() => setProgress(0), 500);
@@ -264,8 +276,10 @@ export function ProductImagesUploader({
           <div className="text-xs text-muted-foreground space-y-1">
             <p>• La primera imagen es la principal del producto</p>
             <p>• Arrastra las imágenes para reordenarlas</p>
-            <p>• Formatos: JPG, PNG, WebP (máx. 5MB)</p>
-            <p>• Recomendado: Imágenes cuadradas de al menos 800x800px</p>
+            <p>• Recomendado: Imágenes cuadradas (1:1) y optimizadas</p>
+            <p>
+              • Si falla la subida, intenta comprimir la imagen (ej. TinyPNG)
+            </p>
           </div>
         </div>
       </div>

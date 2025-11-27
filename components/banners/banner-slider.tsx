@@ -33,7 +33,7 @@ export function BannerSlider({ banners }: { banners: Banner[] }) {
 
   return (
     <div className="relative group">
-      <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
+      <div className="overflow-hidden rounded-xl sm:rounded-2xl" ref={emblaRef}>
         <div className="flex">
           {banners.map((banner) => (
             <div className="flex-[0_0_100%] min-w-0 relative" key={banner.id}>
@@ -49,18 +49,20 @@ export function BannerSlider({ banners }: { banners: Banner[] }) {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/20 text-white hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg"
             onClick={scrollPrev}
+            aria-label="Banner anterior"
           >
-            <ChevronLeft className="h-8 w-8" />
+            <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/20 text-white hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-lg"
             onClick={scrollNext}
+            aria-label="Siguiente banner"
           >
-            <ChevronRight className="h-8 w-8" />
+            <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
           </Button>
         </>
       )}

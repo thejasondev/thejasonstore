@@ -36,6 +36,13 @@ export async function getActiveBanners(): Promise<Banner[]> {
     const supabase = await createClient();
     const now = new Date().toISOString();
 
+    console.log("[BANNERS] === Fetching Active Banners ===");
+    console.log("[BANNERS] Current server time (ISO):", now);
+    console.log(
+      "[BANNERS] Current local time:",
+      new Date().toLocaleString("es-ES", { timeZone: "America/Havana" })
+    );
+
     const { data, error } = await supabase
       .from("banners")
       .select("*")
@@ -49,20 +56,66 @@ export async function getActiveBanners(): Promise<Banner[]> {
 
     if (!data) return [];
 
+    console.log(
+      "[BANNERS] Total banners from DB (is_active=true):",
+      data.length
+    );
+
     // Filter by date programación
     const activeBanners = data.filter((banner) => {
-      // Si tiene start_date, debe haber comenzado
-      if (banner.start_date && new Date(banner.start_date) > new Date(now)) {
-        return false;
+      console.log(
+        `[BANNERS] --- Checking: "${banner.title}" (ID: ${banner.id}) ---`
+      );
+      console.log(`[BANNERS]   Position: ${banner.position}`);
+      console.log(`[BANNERS]   is_active: ${banner.is_active}`);
+      console.log(`[BANNERS]   start_date: ${banner.start_date || "null"}`);
+      console.log(`[BANNERS]   end_date: ${banner.end_date || "null"}`);
+
+      // Si tiene start_date y no es vacío, debe haber comenzado
+      if (banner.start_date && banner.start_date.trim() !== "") {
+        const startDate = new Date(banner.start_date);
+        const nowDate = new Date(now);
+        const hasNotStarted = startDate > nowDate;
+
+        console.log(
+          `[BANNERS]   Start check: ${startDate.toISOString()} > ${nowDate.toISOString()} = ${hasNotStarted}`
+        );
+
+        if (hasNotStarted) {
+          console.log(`[BANNERS]   ❌ HIDDEN - Banner hasn't started yet`);
+          return false;
+        }
       }
 
-      // Si tiene end_date, no debe haber terminado
-      if (banner.end_date && new Date(banner.end_date) < new Date(now)) {
-        return false;
+      // Si tiene end_date y no es vacío, no debe haber terminado
+      if (banner.end_date && banner.end_date.trim() !== "") {
+        const endDate = new Date(banner.end_date);
+        const nowDate = new Date(now);
+        const hasEnded = endDate < nowDate;
+
+        console.log(
+          `[BANNERS]   End check: ${endDate.toISOString()} < ${nowDate.toISOString()} = ${hasEnded}`
+        );
+
+        if (hasEnded) {
+          console.log(`[BANNERS]   ❌ HIDDEN - Banner has ended`);
+          return false;
+        }
       }
 
+      console.log(`[BANNERS]   ✅ ACTIVE - Banner will be displayed`);
       return true;
     });
+
+    console.log(
+      "[BANNERS] === Result: " +
+        activeBanners.length +
+        " active banners will be shown ==="
+    );
+    console.log(
+      "[BANNERS] Active banner titles:",
+      activeBanners.map((b) => b.title).join(", ")
+    );
 
     return activeBanners;
   } catch (error) {

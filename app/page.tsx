@@ -54,6 +54,11 @@ export default async function HomePage() {
     hasError = true;
   }
 
+  // Filter banners by position
+  const heroBanners = banners.filter((b) => b.position === "hero");
+  const sliderBanners = banners.filter((b) => b.position === "slider");
+  const infoBanners = banners.filter((b) => b.position === "info");
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -186,17 +191,11 @@ export default async function HomePage() {
             <BannerRenderer banners={banners} position="info" />
           </section>
 
-          {/* Categories */}
-          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
-                Explora por Categoría
-              </h2>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
-                Encuentra exactamente lo que buscas navegando por nuestras
-                categorías especializadas
-              </p>
-            </div>
+          {/* Categories Section */}
+          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-balance">
+              Explora por Categorías
+            </h2>
 
             {categories.length === 0 ? (
               <div className="glass-card rounded-2xl p-8 text-center">

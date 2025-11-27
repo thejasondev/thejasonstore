@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function HeroBanner({ banner }: { banner: Banner }) {
   return (
-    <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden rounded-2xl group">
+    <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] overflow-hidden rounded-xl sm:rounded-2xl group">
       {/* Background Image */}
       <Image
         src={banner.image_url}
@@ -17,6 +17,7 @@ export function HeroBanner({ banner }: { banner: Banner }) {
         fill
         className="object-cover transition-transform duration-700 group-hover:scale-105"
         priority
+        sizes="100vw"
       />
 
       {/* Overlay */}
@@ -30,10 +31,10 @@ export function HeroBanner({ banner }: { banner: Banner }) {
       />
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-12 lg:px-20">
-        <div className="max-w-2xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-6 md:px-12 lg:px-20">
+        <div className="max-w-2xl space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h2
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight"
             style={{ color: banner.text_color }}
           >
             {banner.title}
@@ -41,7 +42,7 @@ export function HeroBanner({ banner }: { banner: Banner }) {
 
           {banner.description && (
             <p
-              className="text-lg md:text-xl text-white/90 max-w-xl leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-white/90 max-w-xl leading-relaxed"
               style={{
                 color: banner.text_color ? `${banner.text_color}E6` : undefined,
               }}
@@ -55,7 +56,7 @@ export function HeroBanner({ banner }: { banner: Banner }) {
               asChild
               size="lg"
               className={cn(
-                "rounded-full text-base font-semibold px-8 h-12 transition-all hover:scale-105",
+                "rounded-full text-sm sm:text-base font-semibold px-6 sm:px-8 h-11 sm:h-12 transition-all hover:scale-105 shadow-lg",
                 banner.cta_style === "outline"
                   ? "bg-transparent border-2 border-white text-white hover:bg-white hover:text-black"
                   : banner.cta_style === "secondary"

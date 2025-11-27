@@ -1,72 +1,80 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, MessageCircle } from "lucide-react"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { useCart } from "@/lib/context/cart-context"
-import { formatPrice } from "@/lib/utils/format"
-import { WHATSAPP_PHONE } from "@/lib/constants"
-import { toast } from "sonner"
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  ArrowLeft,
+  MessageCircle,
+} from "lucide-react";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/lib/context/cart-context";
+import { formatPrice } from "@/lib/utils/format";
+import { WHATSAPP_PHONE } from "@/lib/constants";
+import { toast } from "sonner";
 
 export default function CarritoPage() {
-  const { items, itemCount, total, updateQuantity, removeItem, isLoading } = useCart()
-  const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set())
+  const { items, itemCount, total, updateQuantity, removeItem, isLoading } =
+    useCart();
+  const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
-    setUpdatingItems(prev => new Set(prev).add(itemId))
+    setUpdatingItems((prev) => new Set(prev).add(itemId));
     try {
-      await updateQuantity(itemId, newQuantity)
+      await updateQuantity(itemId, newQuantity);
     } catch (error) {
-      toast.error('Error al actualizar cantidad')
+      toast.error("Error al actualizar cantidad");
     } finally {
-      setUpdatingItems(prev => {
-        const next = new Set(prev)
-        next.delete(itemId)
-        return next
-      })
+      setUpdatingItems((prev) => {
+        const next = new Set(prev);
+        next.delete(itemId);
+        return next;
+      });
     }
-  }
+  };
 
   const handleRemoveItem = async (itemId: string, productName: string) => {
     try {
-      await removeItem(itemId)
-      toast.success('Producto eliminado', {
-        description: `${productName} se eliminó del carrito`
-      })
+      await removeItem(itemId);
+      toast.success("Producto eliminado", {
+        description: `${productName} se eliminó del carrito`,
+      });
     } catch (error) {
-      toast.error('Error al eliminar producto')
+      toast.error("Error al eliminar producto");
     }
-  }
+  };
 
   const generateWhatsAppMessage = () => {
-    let message = `¡Hola! Me interesa comprar los siguientes productos:\n\n`
-    
+    let message = `¡Hola! Me interesa comprar los siguientes productos:\n\n`;
+
     items.forEach((item, index) => {
-      const product = item.product
+      const product = item.product;
       if (product) {
-        message += `${index + 1}. ${product.title}\n`
-        message += `   Cantidad: ${item.quantity}\n`
-        message += `   Precio: ${formatPrice(product.price)}\n\n`
+        message += `${index + 1}. ${product.title}\n`;
+        message += `   Cantidad: ${item.quantity}\n`;
+        message += `   Precio: ${formatPrice(product.price)}\n\n`;
       }
-    })
-    
-    message += `Total: ${formatPrice(total)}\n\n`
-    message += `¿Podrías confirmar la disponibilidad?`
-    
-    return encodeURIComponent(message)
-  }
+    });
+
+    message += `Total: ${formatPrice(total)}\n\n`;
+    message += `¿Podrías confirmar la disponibilidad?`;
+
+    return encodeURIComponent(message);
+  };
 
   const handleWhatsAppCheckout = () => {
-    const message = generateWhatsAppMessage()
-    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${message}`, '_blank')
-  }
+    const message = generateWhatsAppMessage();
+    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${message}`, "_blank");
+  };
 
   if (isLoading) {
     return (
@@ -82,32 +90,36 @@ export default function CarritoPage() {
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link 
-            href="/productos" 
+          <Link
+            href="/productos"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
             Continuar comprando
           </Link>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">Tu Carrito</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
+            Tu Carrito
+          </h1>
           <p className="text-muted-foreground">
-            {itemCount === 0 ? 'No hay productos' : `${itemCount} ${itemCount === 1 ? 'producto' : 'productos'}`}
+            {itemCount === 0
+              ? "No hay productos"
+              : `${itemCount} ${itemCount === 1 ? "producto" : "productos"}`}
           </p>
         </div>
 
         {items.length === 0 ? (
           /* Empty State */
-          <Card className="glass-card p-12 text-center">
+          <Card className="glass-card p-12 sm:p-16 text-center">
             <div className="max-w-md mx-auto">
               <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
                 <ShoppingBag className="h-12 w-12 text-muted-foreground" />
@@ -125,26 +137,26 @@ export default function CarritoPage() {
             </div>
           </Card>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => {
-                const product = item.product
-                if (!product) return null
+                const product = item.product;
+                if (!product) return null;
 
-                const isUpdating = updatingItems.has(item.id)
-                const subtotal = product.price * item.quantity
+                const isUpdating = updatingItems.has(item.id);
+                const subtotal = product.price * item.quantity;
 
                 return (
-                  <Card key={item.id} className="glass-card p-4 md:p-6">
+                  <Card key={item.id} className="glass-card p-4 sm:p-6">
                     <div className="flex gap-4">
                       {/* Product Image */}
-                      <Link 
+                      <Link
                         href={`/producto/${product.slug}`}
                         className="relative w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-muted shrink-0 group"
                       >
                         <Image
-                          src={product.images[0] || '/placeholder.svg'}
+                          src={product.images[0] || "/placeholder.svg"}
                           alt={product.title}
                           fill
                           className="object-cover transition-transform group-hover:scale-110"
@@ -155,7 +167,7 @@ export default function CarritoPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div className="flex-1">
-                            <Link 
+                            <Link
                               href={`/producto/${product.slug}`}
                               className="font-semibold text-lg hover:text-accent transition-colors line-clamp-2"
                             >
@@ -168,7 +180,9 @@ export default function CarritoPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleRemoveItem(item.id, product.title)}
+                            onClick={() =>
+                              handleRemoveItem(item.id, product.title)
+                            }
                             className="shrink-0 hover:text-destructive hover:bg-destructive/10"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -183,7 +197,9 @@ export default function CarritoPage() {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                              onClick={() =>
+                                handleUpdateQuantity(item.id, item.quantity - 1)
+                              }
                               disabled={isUpdating || item.quantity <= 1}
                             >
                               <Minus className="h-3 w-3" />
@@ -199,8 +215,12 @@ export default function CarritoPage() {
                               variant="outline"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                              disabled={isUpdating || item.quantity >= product.stock}
+                              onClick={() =>
+                                handleUpdateQuantity(item.id, item.quantity + 1)
+                              }
+                              disabled={
+                                isUpdating || item.quantity >= product.stock
+                              }
                             >
                               <Plus className="h-3 w-3" />
                             </Button>
@@ -213,7 +233,9 @@ export default function CarritoPage() {
 
                           {/* Subtotal */}
                           <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Subtotal</p>
+                            <p className="text-sm text-muted-foreground">
+                              Subtotal
+                            </p>
                             <p className="text-xl font-bold text-accent">
                               {formatPrice(subtotal)}
                             </p>
@@ -222,7 +244,7 @@ export default function CarritoPage() {
                       </div>
                     </div>
                   </Card>
-                )
+                );
               })}
             </div>
 
@@ -230,23 +252,26 @@ export default function CarritoPage() {
             <div className="lg:col-span-1">
               <Card className="glass-card p-6 sticky top-20">
                 <h2 className="text-2xl font-bold mb-6">Resumen del Pedido</h2>
-                
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotal ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})</span>
+                    <span className="text-muted-foreground">
+                      Subtotal ({itemCount}{" "}
+                      {itemCount === 1 ? "producto" : "productos"})
+                    </span>
                     <span className="font-medium">{formatPrice(total)}</span>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span className="text-accent">{formatPrice(total)}</span>
                   </div>
                 </div>
 
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="w-full gap-2 mb-4"
                   onClick={handleWhatsAppCheckout}
                 >
@@ -272,5 +297,5 @@ export default function CarritoPage() {
 
       <Footer />
     </div>
-  )
+  );
 }

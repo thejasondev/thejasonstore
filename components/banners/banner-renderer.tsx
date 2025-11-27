@@ -7,7 +7,7 @@ import { InfoBanner } from "./info-banner";
 
 interface BannerRendererProps {
   banners: Banner[];
-  position: "hero" | "slider" | "info" | "sidebar";
+  position: "hero" | "slider" | "info";
   className?: string;
 }
 
@@ -25,7 +25,7 @@ export function BannerRenderer({
   }
 
   if (position === "hero") {
-    // If multiple hero banners, show as slider if requested, otherwise show first
+    // If multiple hero banners, show as slider, otherwise show first
     if (filteredBanners.length > 1) {
       return <BannerSlider banners={filteredBanners} />;
     }
@@ -34,7 +34,7 @@ export function BannerRenderer({
 
   if (position === "info") {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {filteredBanners.map((banner) => (
           <InfoBanner key={banner.id} banner={banner} />
         ))}
