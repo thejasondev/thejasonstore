@@ -42,7 +42,9 @@ export function BannerForm({ banner, mode }: BannerFormProps) {
     banner?.cta_style || "primary"
   );
   const [position, setPosition] = useState<"hero" | "slider" | "info">(
-    banner?.position === "sidebar" ? "hero" : banner?.position || "hero"
+    (banner?.position as string) === "sidebar"
+      ? "hero"
+      : (banner?.position as "hero" | "slider" | "info") || "hero"
   );
   const [isActive, setIsActive] = useState(banner?.is_active ?? true);
   const [startDate, setStartDate] = useState(banner?.start_date || "");
