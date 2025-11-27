@@ -141,7 +141,7 @@ export function ProductImagesUploader({
       e.preventDefault();
 
       const files = e.dataTransfer.files;
-      if (files?.length > 0) {
+      if (files && files.length > 0) {
         handleFileUpload(files[0], index);
       }
     },
@@ -160,7 +160,8 @@ export function ProductImagesUploader({
         onDragOver={(e) => handleDragOver(e, index)}
         onDrop={(e) => {
           // Check if it's a file drop or image reorder
-          if (e.dataTransfer.files?.length > 0) {
+          const droppedFiles = e.dataTransfer.files;
+          if (droppedFiles && droppedFiles.length > 0) {
             handleFileDrop(e, index);
           } else {
             handleDrop(e, index);
