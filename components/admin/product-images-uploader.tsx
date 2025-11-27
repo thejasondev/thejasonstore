@@ -155,7 +155,7 @@ export function ProductImagesUploader({
     return (
       <div
         key={index}
-        draggable={hasImage}
+        draggable={!!hasImage}
         onDragStart={() => handleDragStart(index)}
         onDragOver={(e) => handleDragOver(e, index)}
         onDrop={(e) => {
