@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Category, Product } from "@/lib/types";
+import { formatPrice } from "@/lib/utils/format";
 import {
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil, Trash2, Star } from "lucide-react";
 import Link from "next/link";
 import { deleteProduct, toggleProductFeatured } from "@/lib/actions/products";
@@ -122,7 +124,7 @@ export function ProductsTable({ products, categories }: ProductsTableProps) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    ${product.price.toFixed(2)} {product.currency}
+                    {formatPrice(product.price, product.currency)}
                   </TableCell>
                   <TableCell>
                     {product.stock > 0 ? (

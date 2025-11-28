@@ -1,19 +1,18 @@
 "use client";
 
-import type React from "react";
-
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { useState, useCallback } from "react";
+import { ShoppingCart, Check, Eye, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCart } from "@/lib/context/cart-context";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/format";
 
 interface ProductCardProps {
   product: Product;
@@ -255,10 +254,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-2xl font-bold">
-              ${product.price.toFixed(2)}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {product.currency}
+              {formatPrice(product.price, product.currency)}
             </span>
           </div>
           {inStock && (

@@ -23,6 +23,7 @@ import { useCart } from "@/lib/context/cart-context";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/format";
 
 interface ProductQuickViewProps {
   product: Product | null;
@@ -188,10 +189,7 @@ export function ProductQuickView({
             <div className="border-y border-border py-4">
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-3xl font-bold">
-                  ${product.price.toFixed(2)}
-                </span>
-                <span className="text-lg text-muted-foreground">
-                  {product.currency}
+                  {formatPrice(product.price, product.currency)}
                 </span>
               </div>
               {inStock ? (

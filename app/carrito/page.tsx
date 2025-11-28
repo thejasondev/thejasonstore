@@ -10,6 +10,7 @@ import {
   ShoppingBag,
   ArrowLeft,
   MessageCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -17,6 +18,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCart } from "@/lib/context/cart-context";
 import { formatPrice } from "@/lib/utils/format";
 import { WHATSAPP_PHONE } from "@/lib/constants";
@@ -26,6 +37,10 @@ export default function CarritoPage() {
   const { items, itemCount, total, updateQuantity, removeItem, isLoading } =
     useCart();
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
+  const [itemToDelete, setItemToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     setUpdatingItems((prev) => new Set(prev).add(itemId));
@@ -42,14 +57,18 @@ export default function CarritoPage() {
     }
   };
 
-  const handleRemoveItem = async (itemId: string, productName: string) => {
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+
     try {
-      await removeItem(itemId);
+      await removeItem(itemToDelete.id);
       toast.success("Producto eliminado", {
-        description: `${productName} se eliminó del carrito`,
+        description: `${itemToDelete.name} se eliminó del carrito`,
       });
     } catch (error) {
       toast.error("Error al eliminar producto");
+    } finally {
+      setItemToDelete(null);
     }
   };
 
@@ -148,23 +167,58 @@ export default function CarritoPage() {
                 const subtotal = product.price * item.quantity;
 
                 return (
-                  <Card key={item.id} className="glass-card p-4 sm:p-6">
-                    <div className="flex gap-4">
-                      {/* Product Image */}
-                      <Link
-                        href={`/producto/${product.slug}`}
-                        className="relative w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-muted shrink-0 group"
-                      >
-                        <Image
-                          src={product.images[0] || "/placeholder.svg"}
-                          alt={product.title}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-110"
-                        />
-                      </Link>
+                  <Card key={item.id} className="glass-card p-3 sm:p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      {/* Product Image & Mobile Header */}
+                      <div className="flex gap-4 sm:block">
+                        <Link
+                          href={`/producto/${product.slug}`}
+                          className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-muted shrink-0 group"
+                        >
+                          <Image
+                            src={product.images[0] || "/placeholder.svg"}
+                            alt={product.title}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-110"
+                          />
+                        </Link>
 
-                      {/* Product Info */}
-                      <div className="flex-1 min-w-0">
+                        {/* Mobile Title & Delete - Visible only on mobile */}
+                        <div className="flex-1 sm:hidden flex flex-col justify-between">
+                          <div>
+                            <Link
+                              href={`/producto/${product.slug}`}
+                              className="font-semibold text-base line-clamp-2 leading-tight mb-1"
+                            >
+                              {product.title}
+                            </Link>
+                            <p className="text-xs text-muted-foreground">
+                              {product.category}
+                            </p>
+                          </div>
+                          <div className="flex items-center justify-between mt-2">
+                            <p className="font-bold text-accent">
+                              {formatPrice(product.price, product.currency)}
+                            </p>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                setItemToDelete({
+                                  id: item.id,
+                                  name: product.title,
+                                })
+                              }
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Desktop Product Info */}
+                      <div className="hidden sm:flex flex-1 min-w-0 flex-col">
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div className="flex-1">
                             <Link
@@ -181,7 +235,10 @@ export default function CarritoPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() =>
-                              handleRemoveItem(item.id, product.title)
+                              setItemToDelete({
+                                id: item.id,
+                                name: product.title,
+                              })
                             }
                             className="shrink-0 hover:text-destructive hover:bg-destructive/10"
                           >
@@ -190,8 +247,7 @@ export default function CarritoPage() {
                         </div>
 
                         {/* Price and Quantity */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
-                          {/* Quantity Controls */}
+                        <div className="flex items-center justify-between gap-4 mt-auto">
                           <div className="flex items-center gap-2">
                             <Button
                               variant="outline"
@@ -226,20 +282,60 @@ export default function CarritoPage() {
                             </Button>
                             {product.stock <= 5 && (
                               <Badge variant="outline" className="ml-2 text-xs">
-                                Solo {product.stock} disponibles
+                                Solo {product.stock}
                               </Badge>
                             )}
                           </div>
 
-                          {/* Subtotal */}
                           <div className="text-right">
                             <p className="text-sm text-muted-foreground">
                               Subtotal
                             </p>
                             <p className="text-xl font-bold text-accent">
-                              {formatPrice(subtotal)}
+                              {formatPrice(subtotal, product.currency)}
                             </p>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Mobile Quantity Controls - Below image/info on mobile */}
+                      <div className="flex sm:hidden items-center justify-between pt-3 border-t border-border/50 mt-2">
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleUpdateQuantity(item.id, item.quantity - 1)
+                            }
+                            disabled={isUpdating || item.quantity <= 1}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="font-medium w-4 text-center">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleUpdateQuantity(item.id, item.quantity + 1)
+                            }
+                            disabled={
+                              isUpdating || item.quantity >= product.stock
+                            }
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">
+                            Subtotal
+                          </p>
+                          <p className="font-bold text-accent">
+                            {formatPrice(subtotal, product.currency)}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -296,6 +392,30 @@ export default function CarritoPage() {
       </main>
 
       <Footer />
+
+      <AlertDialog
+        open={!!itemToDelete}
+        onOpenChange={() => setItemToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Estás seguro que deseas eliminar "{itemToDelete?.name}" de tu
+              carrito?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

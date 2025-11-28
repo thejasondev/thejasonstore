@@ -34,6 +34,7 @@ interface ProductFiltersProps {
 export interface FilterState {
   query?: string;
   category?: string;
+  currency?: string;
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
@@ -161,9 +162,48 @@ export function ProductFilters({
           </Select>
         </div>
 
+        {/* Currency Filter */}
+        <div className="space-y-2">
+          <Label>Moneda</Label>
+          <Select
+            value={filters.currency || "all"}
+            onValueChange={(value) =>
+              handleFilterChange(
+                "currency",
+                value === "all" ? undefined : value
+              )
+            }
+          >
+            <SelectTrigger className="glass-card">
+              <SelectValue placeholder="Todas las monedas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas las monedas</SelectItem>
+              <SelectItem value="USD">
+                <span className="flex items-center gap-2">💵 USD - Dólar</span>
+              </SelectItem>
+              <SelectItem value="EUR">
+                <span className="flex items-center gap-2">💶 EUR - Euro</span>
+              </SelectItem>
+              <SelectItem value="CUP">
+                <span className="flex items-center gap-2">
+                  🇨🇺 CUP - Peso Cubano
+                </span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Price Range */}
         <div className="space-y-4">
-          <Label>Rango de Precio</Label>
+          <Label>
+            Rango de Precio
+            {filters.currency && (
+              <span className="ml-2 text-xs text-muted-foreground font-normal">
+                ({filters.currency})
+              </span>
+            )}
+          </Label>
           <Slider
             min={priceRange.min}
             max={priceRange.max}
@@ -173,8 +213,20 @@ export function ProductFilters({
             className="py-4"
           />
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>${priceValues[0]}</span>
-            <span>${priceValues[1]}</span>
+            <span>
+              {filters.currency === "EUR"
+                ? `${priceValues[0].toLocaleString()} €`
+                : `${priceValues[0].toLocaleString()} ${
+                    filters.currency || ""
+                  }`}
+            </span>
+            <span>
+              {filters.currency === "EUR"
+                ? `${priceValues[1].toLocaleString()} €`
+                : `${priceValues[1].toLocaleString()} ${
+                    filters.currency || ""
+                  }`}
+            </span>
           </div>
         </div>
 
@@ -326,11 +378,53 @@ export function ProductFilters({
                   </Select>
                 </div>
 
+                {/* Moneda con card */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold text-foreground">
+                    Moneda
+                  </Label>
+                  <Select
+                    value={filters.currency || "all"}
+                    onValueChange={(value) =>
+                      handleFilterChange(
+                        "currency",
+                        value === "all" ? undefined : value
+                      )
+                    }
+                  >
+                    <SelectTrigger className="h-12 text-base glass-card border-2 hover:border-accent transition-colors">
+                      <SelectValue placeholder="Todas las monedas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas las monedas</SelectItem>
+                      <SelectItem value="USD">
+                        <span className="flex items-center gap-2">
+                          💵 USD - Dólar
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="EUR">
+                        <span className="flex items-center gap-2">
+                          💶 EUR - Euro
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="CUP">
+                        <span className="flex items-center gap-2">
+                          🇨🇺 CUP - Peso Cubano
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Precio con card visual */}
                 <div className="space-y-4 p-4 rounded-xl bg-accent/5 border border-accent/20">
                   <Label className="text-sm font-semibold text-foreground">
-                    {" "}
                     Rango de Precio
+                    {filters.currency && (
+                      <span className="ml-2 text-xs text-muted-foreground font-normal">
+                        ({filters.currency})
+                      </span>
+                    )}
                   </Label>
                   <Slider
                     min={priceRange.min}
@@ -343,13 +437,21 @@ export function ProductFilters({
                   <div className="flex items-center justify-between">
                     <div className="px-3 py-2 rounded-lg bg-background border border-border">
                       <span className="text-sm font-semibold">
-                        ${priceValues[0]}
+                        {filters.currency === "EUR"
+                          ? `${priceValues[0].toLocaleString()} €`
+                          : `${priceValues[0].toLocaleString()} ${
+                              filters.currency || ""
+                            }`}
                       </span>
                     </div>
                     <div className="h-px flex-1 bg-border mx-2" />
                     <div className="px-3 py-2 rounded-lg bg-background border border-border">
                       <span className="text-sm font-semibold">
-                        ${priceValues[1]}
+                        {filters.currency === "EUR"
+                          ? `${priceValues[1].toLocaleString()} €`
+                          : `${priceValues[1].toLocaleString()} ${
+                              filters.currency || ""
+                            }`}
                       </span>
                     </div>
                   </div>

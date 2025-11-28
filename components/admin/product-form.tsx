@@ -40,6 +40,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const [images, setImages] = useState<string[]>(
     product?.images?.length ? product.images : []
   );
+  const [currency, setCurrency] = useState<string>(product?.currency || "USD");
   const hasNormalizedCategory = useRef(false);
   const isEditing = Boolean(product);
 
@@ -125,7 +126,7 @@ export function ProductForm({ product }: ProductFormProps) {
         title: formData.get("title") as string,
         description: formData.get("description") as string,
         price: Number.parseFloat(formData.get("price") as string),
-        currency: product?.currency ?? "USD",
+        currency: currency,
         stock: Number.parseInt(formData.get("stock") as string),
         images:
           images.length > 0
@@ -206,7 +207,7 @@ export function ProductForm({ product }: ProductFormProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="price">Precio</Label>
                 <Input
@@ -218,6 +219,37 @@ export function ProductForm({ product }: ProductFormProps) {
                   required
                   defaultValue={product?.price}
                 />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="currency">Moneda</Label>
+                <Select
+                  name="currency"
+                  value={currency}
+                  onValueChange={setCurrency}
+                  required
+                >
+                  <SelectTrigger id="currency">
+                    <SelectValue placeholder="Selecciona moneda" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">
+                      <span className="flex items-center gap-2">
+                        💵 USD - Dólar
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="EUR">
+                      <span className="flex items-center gap-2">
+                        💶 EUR - Euro
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="CUP">
+                      <span className="flex items-center gap-2">
+                        🇨🇺 CUP - Peso Cubano
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="grid gap-2">

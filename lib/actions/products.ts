@@ -193,6 +193,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
 export async function searchProductsAdvanced(params: {
   query?: string;
   category?: string;
+  currency?: string;
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
@@ -221,6 +222,11 @@ export async function searchProductsAdvanced(params: {
     // Category filter
     if (params.category) {
       query = query.eq("category", params.category);
+    }
+
+    // Currency filter
+    if (params.currency) {
+      query = query.eq("currency", params.currency);
     }
 
     // Price range filter

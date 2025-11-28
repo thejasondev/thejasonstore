@@ -443,7 +443,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                         </div>
                         <div className="text-right flex-shrink-0">
                           <p className="font-semibold text-accent">
-                            {formatPrice(product.price)}
+                            {formatPrice(product.price, product.currency)}
                           </p>
                           {product.stock > 0 ? (
                             <p className="text-xs text-green-600 dark:text-green-400">

@@ -16,6 +16,16 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Generate static paths for all products at build time
+export async function generateStaticParams() {
+  const { getProducts } = await import("@/lib/actions/products");
+  const products = await getProducts();
+
+  return products.map((product) => ({
+    slug: product.slug,
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {

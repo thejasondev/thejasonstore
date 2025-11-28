@@ -50,16 +50,10 @@ export default function ProductsPage() {
       setTotal(productsData.total);
       setCategories(categoriesData);
       setPriceRange(priceData);
-
-      if (productsData.total === 0) {
-        setError(
-          "No hay productos disponibles. Por favor, ejecuta el script SQL de configuración."
-        );
-      }
     } catch (error) {
       console.error("[v0] Error loading data:", error);
       setError(
-        "Error al cargar los productos. Por favor, verifica la configuración de la base de datos."
+        "Hubo un problema al cargar los productos. Por favor intenta recargar la página."
       );
     } finally {
       setIsLoading(false);
@@ -116,19 +110,12 @@ export default function ProductsPage() {
         </div>
 
         {error && (
-          <div className="mb-6 glass-card rounded-2xl p-6 border-l-4 border-accent">
+          <div className="mb-6 glass-card rounded-2xl p-6 border-l-4 border-destructive/50">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-accent mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
               <div>
-                <h3 className="font-semibold mb-1">Configuración Requerida</h3>
+                <h3 className="font-semibold mb-1">Lo sentimos</h3>
                 <p className="text-sm text-muted-foreground">{error}</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Ejecuta el script{" "}
-                  <code className="bg-muted px-2 py-1 rounded">
-                    scripts/SETUP_FINAL.sql
-                  </code>{" "}
-                  en tu Supabase SQL Editor.
-                </p>
               </div>
             </div>
           </div>

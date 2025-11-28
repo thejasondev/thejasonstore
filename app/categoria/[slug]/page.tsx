@@ -15,6 +15,16 @@ interface CategoryPageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Generate static paths for all categories at build time
+export async function generateStaticParams() {
+  const { getAllCategories } = await import("@/lib/actions/categories");
+  const categories = await getAllCategories();
+
+  return categories.map((category) => ({
+    slug: category.slug,
+  }));
+}
+
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
