@@ -25,6 +25,10 @@ export async function generateStaticParams() {
   }));
 }
 
+// Force dynamic rendering - critical for production
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
