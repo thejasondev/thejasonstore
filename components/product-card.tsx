@@ -7,7 +7,7 @@ import type { Product } from "@/lib/types";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Check, Eye, Plus } from "lucide-react";
+import { ShoppingCart, Check, Eye, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCart } from "@/lib/context/cart-context";
