@@ -79,9 +79,17 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+  console.log("[ProductPage] Fetching product with slug:", slug);
+
   const product = await getProductBySlug(slug);
+  console.log(
+    "[ProductPage] Product fetched:",
+    product ? "Found" : "NULL",
+    product?.title
+  );
 
   if (!product) {
+    console.error("[ProductPage] Product not found, calling notFound()");
     notFound();
   }
 

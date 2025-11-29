@@ -49,9 +49,17 @@ export async function generateMetadata({
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
+  console.log("[CategoryPage] Fetching category with slug:", slug);
+
   const category = await getCategoryBySlug(slug);
+  console.log(
+    "[CategoryPage] Category fetched:",
+    category ? "Found" : "NULL",
+    category?.name
+  );
 
   if (!category) {
+    console.error("[CategoryPage] Category not found, calling notFound()");
     notFound();
   }
 
