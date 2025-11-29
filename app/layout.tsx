@@ -2,8 +2,9 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { Toaster } from "sonner";
+import { ResponsiveToaster } from "@/components/ui/responsive-toaster";
 import { CartProvider } from "@/lib/context/cart-context";
+import { MobileNav } from "@/components/mobile-nav";
 import {
   STORE_NAME,
   STORE_DESCRIPTION,
@@ -118,23 +119,9 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         <CartProvider>
           {children}
+          <MobileNav />
           <Analytics />
-          <Toaster
-            position="bottom-right"
-            expand={true}
-            closeButton
-            toastOptions={{
-              duration: 4000,
-              className: "glass-card",
-              classNames: {
-                success: "bg-accent text-accent-foreground border-accent",
-                error: "bg-black text-white border-border",
-                info: "bg-muted/50 text-foreground",
-                warning:
-                  "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
-              },
-            }}
-          />
+          <ResponsiveToaster />
         </CartProvider>
       </body>
     </html>

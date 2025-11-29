@@ -256,39 +256,50 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 gap-0 bg-background/95 backdrop-blur-xl border-border/50 shadow-2xl">
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-3xl p-0 gap-0 bg-background/95 backdrop-blur-xl border-border/50 shadow-2xl sm:rounded-xl overflow-hidden"
+      >
         {/* Accessible Title (Hidden) */}
         <DialogTitle className="sr-only">Búsqueda de productos</DialogTitle>
 
         {/* Search Header */}
-        <div className="relative flex items-center gap-3 px-6 py-5 border-b border-border/50">
-          <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-          <Input
-            ref={inputRef}
-            type="text"
-            placeholder="Buscar productos, categorías..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="border-0 focus-visible:ring-0 text-lg h-auto p-0 bg-transparent flex-1"
-            autoComplete="off"
-          />
-          {query && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setQuery("");
-                setSelectedIndex(-1);
-                inputRef.current?.focus();
-              }}
-              className="shrink-0 h-9 w-9 rounded-lg hover:bg-accent/10 transition-colors"
-              title="Limpiar búsqueda"
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Limpiar búsqueda</span>
-            </Button>
-          )}
+        {/* Search Header */}
+        <div className="flex items-center gap-3 px-4 py-4 border-b border-border/50">
+          <div className="relative flex-1 flex items-center">
+            <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              ref={inputRef}
+              type="text"
+              placeholder="Buscar productos..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="pl-9 pr-9 h-11 bg-muted/50 border-transparent focus-visible:bg-background focus-visible:border-accent/50 focus-visible:ring-0 transition-all rounded-xl text-base"
+              autoComplete="off"
+            />
+            {query && (
+              <button
+                onClick={() => {
+                  setQuery("");
+                  setSelectedIndex(-1);
+                  inputRef.current?.focus();
+                }}
+                className="absolute right-3 p-0.5 rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/30 text-muted-foreground transition-colors"
+                title="Borrar texto"
+              >
+                <X className="h-3 w-3" />
+                <span className="sr-only">Borrar texto</span>
+              </button>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="shrink-0 text-base font-medium text-accent hover:text-accent/80 hover:bg-transparent px-2"
+          >
+            Cancelar
+          </Button>
         </div>
 
         {/* Search Results */}
@@ -372,7 +383,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                             : "glass-card glass-hover border border-transparent"
                         )}
                       >
-                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                           <CategoryIcon
                             iconName={category.icon || category.slug}
                             className="h-5 w-5 text-accent"
@@ -413,7 +424,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                             : "glass-card glass-hover border border-transparent"
                         )}
                       >
-                        <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
+                        <div className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-muted">
                           <Image
                             src={product.images[0] || "/placeholder.svg"}
                             alt={product.title}
@@ -441,7 +452,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                             {product.category}
                           </p>
                         </div>
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                           <p className="font-semibold text-accent">
                             {formatPrice(product.price, product.currency)}
                           </p>

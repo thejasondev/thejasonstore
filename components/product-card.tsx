@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/context/cart-context";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils/format";
+import { SaleBadge } from "@/components/sale-badge";
 
 interface ProductCardProps {
   product: Product;
@@ -153,6 +154,16 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
           {/* Gradient overlay on hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20" />
 
+          {/* Sale Badge */}
+          {product.is_on_sale && product.sale_price && (
+            <SaleBadge
+              originalPrice={product.price}
+              salePrice={product.sale_price}
+              variant="corner"
+              size="md"
+            />
+          )}
+
           {/* Out of stock overlay */}
           {!inStock && (
             <div className="absolute inset-0 glass flex items-center justify-center z-30">
@@ -259,10 +270,21 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
         </CardContent>
 
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-2xl font-bold">
-              {formatPrice(product.price, product.currency)}
-            </span>
+          <div className="flex flex-col gap-1">
+            {product.is_on_sale && product.sale_price ? (
+              <>
+                <span className="text-2xl font-bold text-accent">
+                  {formatPrice(product.sale_price, product.currency)}
+                </span>
+                <span className="text-sm text-muted-foreground line-through">
+                  {formatPrice(product.price, product.currency)}
+                </span>
+              </>
+            ) : (
+              <span className="text-2xl font-bold">
+                {formatPrice(product.price, product.currency)}
+              </span>
+            )}
           </div>
           {inStock && (
             <Badge

@@ -4,6 +4,10 @@ import { useMemo, useState } from "react";
 import type { Category, Product } from "@/lib/types";
 import { formatPrice } from "@/lib/utils/format";
 import {
+  calculateDiscountPercentage,
+  getEffectivePrice,
+} from "@/lib/utils/discount-utils";
+import {
   Table,
   TableBody,
   TableCell,
@@ -124,7 +128,38 @@ export function ProductsTable({ products, categories }: ProductsTableProps) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {formatPrice(product.price, product.currency)}
+                    <div className="flex flex-col">
+                      {product.is_on_sale && product.sale_price ? (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-green-600">
+                              {formatPrice(
+                                product.sale_price,
+                                product.currency
+                              )}
+                            </span>
+                            <Badge
+                              variant="secondary"
+                              className="h-5 px-1.5 text-[10px] bg-green-100 text-green-700 hover:bg-green-100"
+                            >
+                              -
+                              {calculateDiscountPercentage(
+                                product.price,
+                                product.sale_price
+                              )}
+                              %
+                            </Badge>
+                          </div>
+                          <span className="text-xs text-muted-foreground line-through">
+                            {formatPrice(product.price, product.currency)}
+                          </span>
+                        </>
+                      ) : (
+                        <span>
+                          {formatPrice(product.price, product.currency)}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     {product.stock > 0 ? (

@@ -12,6 +12,11 @@ export interface Product {
   category_id?: string | null;
   is_featured?: boolean;
   is_active?: boolean;
+  // Sale/Discount fields
+  sale_price?: number | null;
+  sale_start_date?: string | null;
+  sale_end_date?: string | null;
+  is_on_sale?: boolean;
   created_at: string;
   updated_at?: string;
 }

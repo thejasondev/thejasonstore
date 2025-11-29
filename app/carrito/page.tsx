@@ -32,6 +32,12 @@ import { useCart } from "@/lib/context/cart-context";
 import { formatPrice } from "@/lib/utils/format";
 import { WHATSAPP_PHONE } from "@/lib/constants";
 import { toast } from "sonner";
+import {
+  getEffectivePrice,
+  calculateSavings,
+  calculateDiscountPercentage,
+} from "@/lib/utils/discount-utils";
+import { SaleBadge } from "@/components/sale-badge";
 
 export default function CarritoPage() {
   const { items, itemCount, total, updateQuantity, removeItem, isLoading } =
@@ -62,8 +68,10 @@ export default function CarritoPage() {
 
     try {
       await removeItem(itemToDelete.id);
-      toast.success("Producto eliminado", {
+      await removeItem(itemToDelete.id);
+      toast.error("Producto eliminado", {
         description: `${itemToDelete.name} se eliminó del carrito`,
+        icon: <Trash2 className="h-5 w-5 text-destructive" />,
       });
     } catch (error) {
       toast.error("Error al eliminar producto");
@@ -164,7 +172,13 @@ export default function CarritoPage() {
                 if (!product) return null;
 
                 const isUpdating = updatingItems.has(item.id);
-                const subtotal = product.price * item.quantity;
+                const effectivePrice = getEffectivePrice(product);
+                const subtotal = effectivePrice * item.quantity;
+                const isOnSale = product.is_on_sale && product.sale_price;
+                const savings = isOnSale
+                  ? calculateSavings(product.price, product.sale_price!) *
+                    item.quantity
+                  : 0;
 
                 return (
                   <Card key={item.id} className="glass-card p-3 sm:p-6">
@@ -197,9 +211,28 @@ export default function CarritoPage() {
                             </p>
                           </div>
                           <div className="flex items-center justify-between mt-2">
-                            <p className="font-bold text-accent">
-                              {formatPrice(product.price, product.currency)}
-                            </p>
+                            <div className="flex flex-col">
+                              {isOnSale ? (
+                                <>
+                                  <span className="font-bold text-accent">
+                                    {formatPrice(
+                                      effectivePrice,
+                                      product.currency
+                                    )}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground line-through">
+                                    {formatPrice(
+                                      product.price,
+                                      product.currency
+                                    )}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="font-bold text-accent">
+                                  {formatPrice(product.price, product.currency)}
+                                </span>
+                              )}
+                            </div>
                             <Button
                               variant="ghost"
                               size="icon"
@@ -230,6 +263,16 @@ export default function CarritoPage() {
                             <p className="text-sm text-muted-foreground mt-1">
                               {product.category}
                             </p>
+                            {isOnSale && product.sale_price && (
+                              <div className="mt-2">
+                                <SaleBadge
+                                  originalPrice={product.price}
+                                  salePrice={product.sale_price}
+                                  variant="inline"
+                                  size="sm"
+                                />
+                              </div>
+                            )}
                           </div>
                           <Button
                             variant="ghost"
@@ -294,6 +337,11 @@ export default function CarritoPage() {
                             <p className="text-xl font-bold text-accent">
                               {formatPrice(subtotal, product.currency)}
                             </p>
+                            {isOnSale && (
+                              <p className="text-xs text-green-600 font-medium">
+                                Ahorras {formatPrice(savings, product.currency)}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -336,6 +384,11 @@ export default function CarritoPage() {
                           <p className="font-bold text-accent">
                             {formatPrice(subtotal, product.currency)}
                           </p>
+                          {isOnSale && (
+                            <p className="text-xs text-green-600 font-medium">
+                              -{formatPrice(savings, product.currency)}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -357,6 +410,36 @@ export default function CarritoPage() {
                     </span>
                     <span className="font-medium">{formatPrice(total)}</span>
                   </div>
+
+                  {items.some(
+                    (item) =>
+                      item.product?.is_on_sale && item.product.sale_price
+                  ) && (
+                    <div className="flex justify-between text-sm text-green-600 font-medium">
+                      <span>Ahorro Total</span>
+                      <span>
+                        -
+                        {formatPrice(
+                          items.reduce((acc, item) => {
+                            if (
+                              item.product?.is_on_sale &&
+                              item.product.sale_price
+                            ) {
+                              return (
+                                acc +
+                                calculateSavings(
+                                  item.product.price,
+                                  item.product.sale_price
+                                ) *
+                                  item.quantity
+                              );
+                            }
+                            return acc;
+                          }, 0)
+                        )}
+                      </span>
+                    </div>
+                  )}
 
                   <Separator />
 

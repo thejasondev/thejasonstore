@@ -41,7 +41,21 @@ export function ProductForm({ product }: ProductFormProps) {
     product?.images?.length ? product.images : []
   );
   const [currency, setCurrency] = useState<string>(product?.currency || "USD");
+  const [salePrice, setSalePrice] = useState<string>(
+    product?.sale_price?.toString() || ""
+  );
+  const [saleStartDate, setSaleStartDate] = useState<string>(
+    product?.sale_start_date
+      ? new Date(product.sale_start_date).toISOString().slice(0, 16)
+      : ""
+  );
+  const [saleEndDate, setSaleEndDate] = useState<string>(
+    product?.sale_end_date
+      ? new Date(product.sale_end_date).toISOString().slice(0, 16)
+      : ""
+  );
   const hasNormalizedCategory = useRef(false);
+  const priceInputRef = useRef<HTMLInputElement>(null);
   const isEditing = Boolean(product);
 
   useEffect(() => {
@@ -135,6 +149,10 @@ export function ProductForm({ product }: ProductFormProps) {
         category: selectedCategory?.slug ?? categorySlug,
         category_id: selectedCategory?.id ?? product?.category_id ?? null,
         is_featured: formData.get("is_featured") === "on",
+        // Sale fields
+        sale_price: salePrice ? Number.parseFloat(salePrice) : null,
+        sale_start_date: saleStartDate || null,
+        sale_end_date: saleEndDate || null,
       };
 
       if (isEditing && product?.id) {
@@ -211,6 +229,7 @@ export function ProductForm({ product }: ProductFormProps) {
               <div className="grid gap-2">
                 <Label htmlFor="price">Precio</Label>
                 <Input
+                  ref={priceInputRef}
                   id="price"
                   name="price"
                   type="number"
@@ -333,6 +352,110 @@ export function ProductForm({ product }: ProductFormProps) {
                 <p className="text-sm text-muted-foreground">
                   Los productos destacados se muestran en la página principal
                 </p>
+              </div>
+            </div>
+
+            {/* Sale/Discount Section */}
+            <div className="border-t pt-6 mt-6">
+              <h3 className="text-lg font-semibold mb-4">Descuento / Oferta</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Configura un precio de oferta con fechasde inicio y fin. El
+                sistema activará y desactivará automáticamente la oferta.
+              </p>
+
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="sale_price">
+                    Precio de Oferta (opcional)
+                  </Label>
+                  <Input
+                    id="sale_price"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={salePrice}
+                    onChange={(e) => setSalePrice(e.target.value)}
+                  />
+                  {salePrice && (
+                    <div className="text-sm space-y-1">
+                      <p className="text-muted-foreground">
+                        Precio original:{" "}
+                        <span className="line-through">
+                          $
+                          {Number.parseFloat(
+                            priceInputRef.current?.value ||
+                              product?.price?.toString() ||
+                              "0"
+                          ).toFixed(2)}
+                        </span>
+                      </p>
+                      <p className="text-accent font-medium">
+                        Ahorro: $
+                        {(
+                          Number.parseFloat(
+                            priceInputRef.current?.value ||
+                              product?.price?.toString() ||
+                              "0"
+                          ) - Number.parseFloat(salePrice)
+                        ).toFixed(2)}{" "}
+                        (
+                        {(
+                          ((Number.parseFloat(
+                            priceInputRef.current?.value ||
+                              product?.price?.toString() ||
+                              "0"
+                          ) -
+                            Number.parseFloat(salePrice)) /
+                            Number.parseFloat(
+                              priceInputRef.current?.value ||
+                                product?.price?.toString() ||
+                                "1"
+                            )) *
+                          100
+                        ).toFixed(0)}
+                        % OFF)
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="sale_start_date">
+                      Fecha de Inicio{" "}
+                      {salePrice && <span className="text-destructive">*</span>}
+                    </Label>
+                    <Input
+                      id="sale_start_date"
+                      type="datetime-local"
+                      value={saleStartDate}
+                      onChange={(e) => setSaleStartDate(e.target.value)}
+                      required={!!salePrice}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="sale_end_date">
+                      Fecha de Fin{" "}
+                      {salePrice && <span className="text-destructive">*</span>}
+                    </Label>
+                    <Input
+                      id="sale_end_date"
+                      type="datetime-local"
+                      value={saleEndDate}
+                      onChange={(e) => setSaleEndDate(e.target.value)}
+                      required={!!salePrice}
+                      min={saleStartDate}
+                    />
+                  </div>
+                </div>
+
+                {salePrice && (!saleStartDate || !saleEndDate) && (
+                  <p className="text-sm text-destructive">
+                    ⚠️ Las fechas de inicio y fin son obligatorias cuando se
+                    establece un precio de oferta
+                  </p>
+                )}
               </div>
             </div>
           </div>

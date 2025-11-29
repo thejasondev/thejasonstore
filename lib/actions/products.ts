@@ -197,6 +197,7 @@ export async function searchProductsAdvanced(params: {
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
+  onSale?: boolean;
   sortBy?:
     | "price_asc"
     | "price_desc"
@@ -240,6 +241,11 @@ export async function searchProductsAdvanced(params: {
     // Stock filter
     if (params.inStock) {
       query = query.gt("stock", 0);
+    }
+
+    // Sale filter
+    if (params.onSale) {
+      query = query.eq("is_on_sale", true);
     }
 
     // Sorting
@@ -442,6 +448,176 @@ export async function toggleProductFeatured(id: string, isFeatured: boolean) {
   revalidatePath("/productos");
   revalidatePath("/");
   revalidatePath("/admin");
+
+  return data;
+}
+
+/**
+ * Get products currently on sale
+ */
+export async function getSaleProducts(limit = 12): Promise<Product[]> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_on_sale", true)
+      .eq("is_active", true)
+      .order("sale_start_date", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      if (error.code === "42P01" || error.message.includes("does not exist")) {
+        console.log(
+          "[v0] Products table doesn't have sale columns yet. Run the add-discounts-support.sql script."
+        );
+        return [];
+      }
+      console.error("[v0] Error fetching sale products:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("[v0] Unexpected error fetching sale products:", error);
+    return [];
+  }
+}
+
+/**
+ * Get best deals (products with highest savings)
+ */
+export async function getBestDeals(limit = 6): Promise<Product[]> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_on_sale", true)
+      .eq("is_active", true)
+      .not("sale_price", "is", null)
+      .order("price", { ascending: false }) // Higher original price = potentially better deal
+      .limit(limit * 2); // Get more to calculate savings
+
+    if (error) {
+      console.error("[v0] Error fetching best deals:", error);
+      return [];
+    }
+
+    if (!data || data.length === 0) return [];
+
+    // Sort by actual savings amount
+    const sorted = data
+      .map((product) => ({
+        ...product,
+        savings: product.price - (product.sale_price || 0),
+      }))
+      .sort((a, b) => b.savings - a.savings)
+      .slice(0, limit);
+
+    return sorted;
+  } catch (error) {
+    console.error("[v0] Unexpected error fetching best deals:", error);
+    return [];
+  }
+}
+
+/**
+ * Update product sale information (admin only)
+ */
+export async function updateProductSale(
+  id: string,
+  saleData: {
+    sale_price: number | null;
+    sale_start_date: string | null;
+    sale_end_date: string | null;
+  }
+) {
+  const supabase = await createClient();
+
+  // Check if user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Validate sale data
+  if (saleData.sale_price !== null) {
+    if (!saleData.sale_start_date || !saleData.sale_end_date) {
+      throw new Error(
+        "Sale start and end dates are required when setting a sale price"
+      );
+    }
+
+    const startDate = new Date(saleData.sale_start_date);
+    const endDate = new Date(saleData.sale_end_date);
+
+    if (endDate <= startDate) {
+      throw new Error("Sale end date must be after start date");
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .update(saleData)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("[v0] Error updating product sale:", error);
+    throw new Error("Failed to update product sale");
+  }
+
+  revalidatePath("/productos");
+  revalidatePath("/ofertas");
+  revalidatePath(`/producto/${data.slug}`);
+  revalidatePath("/admin");
+  revalidatePath("/");
+
+  return data;
+}
+
+/**
+ * Remove sale from a product (admin only)
+ */
+export async function removeProductSale(id: string) {
+  const supabase = await createClient();
+
+  // Check if user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .update({
+      sale_price: null,
+      sale_start_date: null,
+      sale_end_date: null,
+      is_on_sale: false,
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("[v0] Error removing product sale:", error);
+    throw new Error("Failed to remove product sale");
+  }
+
+  revalidatePath("/productos");
+  revalidatePath("/ofertas");
+  revalidatePath(`/producto/${data.slug}`);
+  revalidatePath("/admin");
+  revalidatePath("/");
 
   return data;
 }

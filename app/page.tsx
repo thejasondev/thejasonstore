@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   MessageCircle,
-  Sparkles,
+  Store,
   ShoppingBag,
   TrendingUp,
   Shield,
@@ -13,7 +13,7 @@ import { Footer } from "@/components/footer";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { ProductsCarousel } from "@/components/products-carousel";
 import { CategoryIcon } from "@/components/category-icon";
-import { getFeaturedProducts } from "@/lib/actions/products";
+import { getFeaturedProducts, getSaleProducts } from "@/lib/actions/products";
 import { getCategories } from "@/lib/actions/categories";
 import { getActiveBanners } from "@/lib/actions/banners";
 import { BannerRenderer } from "@/components/banners/banner-renderer";
@@ -36,17 +36,21 @@ export const metadata = {
 
 export default async function HomePage() {
   let featuredProducts: any[] = [];
+  let saleProducts: any[] = [];
   let categories: Category[] = [];
   let banners: Banner[] = [];
   let hasError = false;
 
   try {
-    const [productsData, categoriesData, bannersData] = await Promise.all([
-      getFeaturedProducts(6), // Obtener solo productos destacados
-      getCategories(),
-      getActiveBanners(),
-    ]);
+    const [productsData, saleProductsData, categoriesData, bannersData] =
+      await Promise.all([
+        getFeaturedProducts(6), // Only featured products
+        getSaleProducts(6), // Only sale products
+        getCategories(),
+        getActiveBanners(),
+      ]);
     featuredProducts = productsData;
+    saleProducts = saleProductsData;
     categories = categoriesData;
     banners = bannersData;
   } catch (error) {
@@ -111,7 +115,7 @@ export default async function HomePage() {
 
               <div className="max-w-4xl mx-auto text-center relative z-10">
                 <div className="inline-flex items-center gap-2 glass-card px-4 py-2 rounded-full mb-6">
-                  <Sparkles className="h-4 w-4 text-accent" />
+                  <Store className="h-4 w-4 text-accent" />
                   <span className="text-sm font-medium">
                     Marketplace de Confianza
                   </span>
@@ -278,6 +282,48 @@ export default async function HomePage() {
               </Button>
             </div>
           </section>
+
+          {/* Sale Products Section */}
+          {saleProducts.length > 0 && (
+            <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 bg-accent/5">
+              <div className="flex items-center justify-between mb-12">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
+                    Ofertas Especiales
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Descuentos increíbles por tiempo limitado
+                  </p>
+                </div>
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="group hidden md:flex"
+                >
+                  <Link href="/ofertas">
+                    Ver todas
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
+              <ProductsCarousel
+                products={saleProducts}
+                autoPlayInterval={5000}
+              />
+              <div className="text-center mt-8 md:hidden">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="group bg-transparent"
+                >
+                  <Link href="/ofertas">
+                    Ver todas las ofertas
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
+            </section>
+          )}
 
           {/* CTA Section */}
           <section className="container mx-auto px-4 py-20">

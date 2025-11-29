@@ -14,6 +14,7 @@ import {
   TrendingUp,
   AlertTriangle,
   ExternalLink,
+  Percent,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -39,6 +40,7 @@ export default async function AdminPage() {
 
   const lowStockCount = products.filter((p) => p.stock < 5).length;
   const activeBannersCount = banners.filter((b) => b.is_active).length;
+  const activeSalesCount = products.filter((p) => p.is_on_sale).length;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -56,7 +58,7 @@ export default async function AdminPage() {
           </div>
         </div>
         {/* Quick Stats */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-8">
           <div className="glass-card p-6 rounded-xl space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-muted-foreground">
@@ -85,6 +87,16 @@ export default async function AdminPage() {
               <LayoutTemplate className="h-4 w-4 text-accent" />
             </div>
             <div className="text-2xl font-bold">{activeBannersCount}</div>
+          </div>
+
+          <div className="glass-card p-6 rounded-xl space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted-foreground">
+                Ofertas Activas
+              </p>
+              <Percent className="h-4 w-4 text-green-500" />
+            </div>
+            <div className="text-2xl font-bold">{activeSalesCount}</div>
           </div>
 
           <div className="glass-card p-6 rounded-xl space-y-2 border-l-4 border-l-destructive">

@@ -9,6 +9,7 @@ import {
   Home,
   Package,
   Mail,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,6 @@ import { SearchModal } from "@/components/search-modal";
 import { useCart } from "@/lib/context/cart-context";
 
 export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
@@ -58,6 +58,13 @@ export function Header() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
             </Link>
             <Link
+              href="/ofertas"
+              className="text-sm font-medium transition-all hover:text-accent relative group flex items-center gap-1.5"
+            >
+              Ofertas
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
+            </Link>
+            <Link
               href="/contacto"
               className="text-sm font-medium transition-all hover:text-accent relative group"
             >
@@ -83,7 +90,7 @@ export function Header() {
             <CartButton />
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Search Button */}
           <div className="flex md:hidden items-center gap-2">
             <Button
               variant="ghost"
@@ -94,109 +101,11 @@ export function Header() {
               <Search className="h-5 w-5" />
               <span className="sr-only">Buscar</span>
             </Button>
-            <CartButton />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <Menu
-                className={`h-6 w-6 transition-all ${
-                  mobileMenuOpen
-                    ? "rotate-90 opacity-0"
-                    : "rotate-0 opacity-100"
-                }`}
-              />
-              <X
-                className={`h-6 w-6 absolute transition-all ${
-                  mobileMenuOpen
-                    ? "rotate-0 opacity-100"
-                    : "-rotate-90 opacity-0"
-                }`}
-              />
-              <span className="sr-only">Abrir menú</span>
-            </Button>
           </div>
         </div>
       </header>
 
       <SearchModal open={searchOpen} onOpenChange={setSearchOpen} />
-
-      <div
-        className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
-          mobileMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-      >
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-
-        {/* Menu Panel */}
-        <div
-          className={`absolute right-0 top-16 bottom-0 w-80 max-w-[85vw] glass p-6 transition-transform duration-300 ${
-            mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <nav className="flex flex-col space-y-2">
-            {/* Menu Items */}
-            {[
-              { href: "/", label: "Inicio", icon: Home },
-              { href: "/productos", label: "Productos", icon: Package },
-              { href: "/contacto", label: "Contacto", icon: Mail },
-            ].map((item, index) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 p-4 rounded-lg glass-card glass-hover group"
-                style={{
-                  animationDelay: `${index * 50}ms`,
-                  animation: mobileMenuOpen
-                    ? "slideIn 0.3s ease-out forwards"
-                    : "none",
-                }}
-              >
-                <item.icon className="h-5 w-5 text-accent transition-transform group-hover:scale-110" />
-                <span className="text-lg font-medium">{item.label}</span>
-              </Link>
-            ))}
-
-            {/* Decorative Element */}
-            <div className="pt-8 mt-auto">
-              <div className="glass-card p-4 rounded-lg text-center">
-                <p className="text-sm text-muted-foreground">
-                  ¿Necesitas ayuda?
-                </p>
-                <Button
-                  asChild
-                  variant="link"
-                  className="text-accent hover:text-accent/80 p-0 h-auto"
-                >
-                  <Link href="/contacto">Contáctanos</Link>
-                </Button>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
     </>
   );
 }

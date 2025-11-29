@@ -45,7 +45,7 @@ export default async function ProductsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3 mt-2 mb-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-2 mb-8">
         <div className="glass-card p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">Total Productos</p>
           <p className="text-2xl font-bold">{products.length}</p>
@@ -63,6 +63,12 @@ export default async function ProductsPage() {
           <p className="text-sm text-muted-foreground">Bajo Stock</p>
           <p className="text-2xl font-bold text-destructive">
             {products.filter((p) => p.stock < 5).length}
+          </p>
+        </div>
+        <div className="glass-card p-4 rounded-lg">
+          <p className="text-sm text-muted-foreground">En Oferta</p>
+          <p className="text-2xl font-bold text-green-500">
+            {products.filter((p) => p.is_on_sale).length}
           </p>
         </div>
       </div>

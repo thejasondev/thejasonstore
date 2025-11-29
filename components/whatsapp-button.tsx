@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { MessageCircle, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { MessageCircle, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,24 +10,27 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import type { Product } from "@/lib/types"
-import { generateWhatsAppUrl, generateWhatsAppMessage } from "@/lib/utils/whatsapp"
+} from "@/components/ui/dialog";
+import type { Product } from "@/lib/types";
+import {
+  generateWhatsAppUrl,
+  generateWhatsAppMessage,
+} from "@/lib/utils/whatsapp";
 
 interface WhatsAppButtonProps {
-  product: Product
+  product: Product;
 }
 
 export function WhatsAppButton({ product }: WhatsAppButtonProps) {
-  const [open, setOpen] = useState(false)
-  const productUrl = typeof window !== "undefined" ? window.location.href : ""
-  const message = generateWhatsAppMessage(product, productUrl)
-  const whatsappUrl = generateWhatsAppUrl(product, productUrl)
+  const [open, setOpen] = useState(false);
+  const productUrl = typeof window !== "undefined" ? window.location.href : "";
+  const message = generateWhatsAppMessage(product, productUrl);
+  const whatsappUrl = generateWhatsAppUrl(product, productUrl);
 
   const handleConfirm = () => {
-    window.open(whatsappUrl, "_blank")
-    setOpen(false)
-  }
+    window.open(whatsappUrl, "_blank");
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -43,32 +46,44 @@ export function WhatsAppButton({ product }: WhatsAppButtonProps) {
           <Sparkles className="ml-2 h-4 w-4 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md glass-card border-border/50">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-md bg-background/98 backdrop-blur-3xl border-border shadow-2xl p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-accent" />
             Comprar por WhatsApp
           </DialogTitle>
           <DialogDescription>
-            Se abrirá WhatsApp con un mensaje pre-llenado con los datos del producto
+            Se abrirá WhatsApp con un mensaje pre-llenado con los datos del
+            producto
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="rounded-lg glass-card p-4">
-            <p className="text-sm font-medium mb-2">Vista previa del mensaje:</p>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{message}</p>
+        <div className="space-y-3 sm:space-y-4">
+          <div className="rounded-lg border border-border bg-muted/30 p-3 sm:p-4 max-h-[45vh] sm:max-h-[50vh] overflow-y-auto">
+            <p className="text-[10px] sm:text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wide">
+              Vista previa del mensaje:
+            </p>
+            <div className="text-[11px] sm:text-sm text-foreground whitespace-pre-wrap leading-relaxed break-words">
+              {message}
+            </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={handleConfirm} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Button
+              onClick={handleConfirm}
+              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
               <MessageCircle className="mr-2 h-4 w-4" />
               Abrir WhatsApp
             </Button>
-            <Button onClick={() => setOpen(false)} variant="outline" className="w-full glass-card">
+            <Button
+              onClick={() => setOpen(false)}
+              variant="outline"
+              className="w-full glass-card"
+            >
               Cancelar
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

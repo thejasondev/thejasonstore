@@ -11,6 +11,12 @@ import { ProductJsonLd } from "@/components/json-ld";
 import { STORE_NAME } from "@/lib/constants";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import {
+  getEffectivePrice,
+  calculateDiscountPercentage,
+  calculateSavings,
+} from "@/lib/utils/discount-utils";
+import { SaleBadge } from "@/components/sale-badge";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -102,6 +108,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const inStock = product.stock > 0;
+  const effectivePrice = getEffectivePrice(product);
+  const isOnSale = product.is_on_sale && product.sale_price;
+  const savings = isOnSale
+    ? calculateSavings(product.price, product.sale_price!)
+    : 0;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -170,13 +181,44 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
 
             <div className="border-y border-border py-6">
-              <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-4xl font-bold">
-                  ${product.price.toFixed(2)}
-                </span>
-                <span className="text-lg text-muted-foreground">
-                  {product.currency}
-                </span>
+              <div className="space-y-3">
+                {isOnSale && product.sale_price ? (
+                  <>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-4xl font-bold text-green-600">
+                        ${product.sale_price.toFixed(2)}
+                      </span>
+                      <span className="text-lg text-muted-foreground">
+                        {product.currency}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl text-muted-foreground line-through">
+                        ${product.price.toFixed(2)}
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        className="h-6 px-2 text-xs bg-green-100 text-green-700 hover:bg-green-100"
+                      >
+                        Ahorras ${savings.toFixed(2)} (
+                        {calculateDiscountPercentage(
+                          product.price,
+                          product.sale_price
+                        )}
+                        % OFF)
+                      </Badge>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold">
+                      ${product.price.toFixed(2)}
+                    </span>
+                    <span className="text-lg text-muted-foreground">
+                      {product.currency}
+                    </span>
+                  </div>
+                )}
               </div>
               {inStock ? (
                 <Badge
@@ -219,6 +261,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
               </dl>
             </div>
+            {isOnSale && product.sale_price && (
+              <div className="absolute top-4 right-4">
+                <SaleBadge
+                  originalPrice={product.price}
+                  salePrice={product.sale_price}
+                  variant="corner"
+                  size="lg"
+                />
+              </div>
+            )}
           </div>
         </div>
       </main>

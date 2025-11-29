@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  ShoppingBag,
   MessageCircle,
   Mail,
   MapPin,
@@ -21,14 +22,17 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-8">
           {/* Brand Section */}
           <div className="col-span-2 md:col-span-1 lg:col-span-2">
-            <Link href="/" className="inline-block mb-4 group">
-              <h3 className="text-2xl font-bold group-hover:text-accent transition-colors">
+            <Link href="/" className="flex items-center space-x-2 group">
+              <div className="relative">
+                <ShoppingBag className="h-6 w-6 transition-transform group-hover:scale-110" />
+                <div className="absolute inset-0 bg-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <span className="text-2xl font-bold tracking-tight">
                 {STORE_NAME}
-              </h3>
+              </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
-              {STORE_DESCRIPTION}. Productos de calidad con la mejor atención.
-              Compra fácil y rápido por WhatsApp.
+              {STORE_DESCRIPTION}
             </p>
 
             {/* Quick Contact CTA */}
@@ -73,21 +77,21 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contacto"
+                  href="/ofertas"
                   className="text-sm text-muted-foreground hover:text-accent transition-colors inline-flex items-center group"
                 >
                   <span className="group-hover:translate-x-1 transition-transform">
-                    Contacto
+                    Ofertas
                   </span>
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/admin"
+                  href="/contacto"
                   className="text-sm text-muted-foreground hover:text-accent transition-colors inline-flex items-center group"
                 >
                   <span className="group-hover:translate-x-1 transition-transform">
-                    Admin
+                    Contacto
                   </span>
                 </Link>
               </li>
