@@ -17,12 +17,20 @@ interface CategoryPageProps {
 
 // Generate static paths for all categories at build time
 export async function generateStaticParams() {
-  const { getAllCategories } = await import("@/lib/actions/categories");
-  const categories = await getAllCategories();
+  // Use anonymous client for build-time (no cookies available)
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
-  return categories.map((category) => ({
-    slug: category.slug,
-  }));
+  const { data: categories } = await supabase.from("categories").select("slug");
+
+  return (
+    categories?.map((category) => ({
+      slug: category.slug,
+    })) || []
+  );
 }
 
 // Force dynamic rendering - critical for production

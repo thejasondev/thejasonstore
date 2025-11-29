@@ -18,12 +18,20 @@ interface ProductPageProps {
 
 // Generate static paths for all products at build time
 export async function generateStaticParams() {
-  const { getProducts } = await import("@/lib/actions/products");
-  const products = await getProducts();
+  // Use anonymous client for build-time (no cookies available)
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
+  const { data: products } = await supabase.from("products").select("slug");
+
+  return (
+    products?.map((product) => ({
+      slug: product.slug,
+    })) || []
+  );
 }
 
 // Force dynamic rendering - critical for production
