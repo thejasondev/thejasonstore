@@ -10,9 +10,6 @@ export const metadata = {
   description: "Gestiona el inventario de tu tienda",
 };
 
-// Force dynamic rendering - admin pages use auth/cookies
-export const dynamic = "force-dynamic";
-
 export default async function ProductsPage() {
   const [products, categories] = await Promise.all([
     getProducts(),

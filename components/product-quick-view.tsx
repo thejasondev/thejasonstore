@@ -229,7 +229,7 @@ export function ProductQuickView({
                 className="w-full h-12 text-base"
                 onClick={() => onOpenChange(false)}
               >
-                <Link href={`/producto/${product.slug}`} prefetch={false}>
+                <Link href={`/producto/${product.slug}`}>
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Ver detalles completos
                 </Link>

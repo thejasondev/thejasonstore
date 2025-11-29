@@ -210,7 +210,6 @@ export default async function HomePage() {
                   <Link
                     key={category.id}
                     href={`/categoria/${category.slug}`}
-                    prefetch={false}
                     className="flex flex-col items-center justify-center p-6 rounded-lg glass-card glass-hover group"
                     aria-label={`Ver productos de ${category.name}`}
                   >
