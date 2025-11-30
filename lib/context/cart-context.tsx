@@ -15,11 +15,16 @@ import {
   removeFromCart,
 } from "@/lib/actions/cart";
 import { getEffectivePrice } from "@/lib/utils/discount-utils";
+import {
+  calculateCartTotalsByCurrency,
+  type CurrencyTotals,
+} from "@/lib/utils/currency-utils";
 
 interface CartContextType {
   items: CartItem[];
   itemCount: number;
-  total: number;
+  total: number; // Deprecated: Use totalsByCurrency instead (kept for backward compatibility)
+  totalsByCurrency: CurrencyTotals;
   isLoading: boolean;
   addItem: (productId: string, quantity?: number) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number) => Promise<void>;
@@ -111,13 +116,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [refreshCart]
   );
 
-  // Calculate totals
+  // Calculate totals grouped by currency
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const total = items.reduce((sum, item) => {
-    if (!item.product) return sum;
-    const price = getEffectivePrice(item.product);
-    return sum + price * item.quantity;
-  }, 0);
+  const totalsByCurrency = calculateCartTotalsByCurrency(items);
+
+  // Backward compatibility: 'total' is USD total (or 0 if no USD)
+  const total = totalsByCurrency["USD"] || 0;
 
   return (
     <CartContext.Provider
@@ -125,6 +129,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         items,
         itemCount,
         total,
+        totalsByCurrency,
         isLoading,
         addItem,
         updateQuantity,

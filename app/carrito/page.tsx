@@ -37,11 +37,18 @@ import {
   calculateSavings,
   calculateDiscountPercentage,
 } from "@/lib/utils/discount-utils";
+import { getSortedCurrencyEntries } from "@/lib/utils/currency-utils";
 import { SaleBadge } from "@/components/sale-badge";
 
 export default function CarritoPage() {
-  const { items, itemCount, total, updateQuantity, removeItem, isLoading } =
-    useCart();
+  const {
+    items,
+    itemCount,
+    totalsByCurrency,
+    updateQuantity,
+    removeItem,
+    isLoading,
+  } = useCart();
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const [itemToDelete, setItemToDelete] = useState<{
     id: string;
@@ -88,12 +95,21 @@ export default function CarritoPage() {
       if (product) {
         message += `${index + 1}. ${product.title}\n`;
         message += `   Cantidad: ${item.quantity}\n`;
-        message += `   Precio: ${formatPrice(product.price)}\n\n`;
+        message += `   Precio: ${formatPrice(
+          product.price,
+          product.currency
+        )}\n\n`;
       }
     });
 
-    message += `Total: ${formatPrice(total)}\n\n`;
-    message += `¿Podrías confirmar la disponibilidad?`;
+    // Add totals by currency
+    message += `\n*TOTALES:*\n`;
+    const sortedTotals = getSortedCurrencyEntries(totalsByCurrency);
+    sortedTotals.forEach(([currency, amount]) => {
+      message += `${currency}: ${formatPrice(amount, currency)}\n`;
+    });
+
+    message += `\n¿Podrías confirmar la disponibilidad?`;
 
     return encodeURIComponent(message);
   };
@@ -408,7 +424,25 @@ export default function CarritoPage() {
                       Subtotal ({itemCount}{" "}
                       {itemCount === 1 ? "producto" : "productos"})
                     </span>
-                    <span className="font-medium">{formatPrice(total)}</span>
+                  </div>
+
+                  {/* Multi-currency totals */}
+                  <div className="space-y-2 pl-4 border-l-2 border-accent/20">
+                    {getSortedCurrencyEntries(totalsByCurrency).map(
+                      ([currency, amount]) => (
+                        <div
+                          key={currency}
+                          className="flex justify-between items-baseline"
+                        >
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {currency}:
+                          </span>
+                          <span className="text-lg font-bold text-accent">
+                            {formatPrice(amount, currency)}
+                          </span>
+                        </div>
+                      )
+                    )}
                   </div>
 
                   {items.some(
@@ -443,9 +477,25 @@ export default function CarritoPage() {
 
                   <Separator />
 
-                  <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
-                    <span className="text-accent">{formatPrice(total)}</span>
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-muted-foreground">
+                      Total
+                    </p>
+                    {getSortedCurrencyEntries(totalsByCurrency).map(
+                      ([currency, amount]) => (
+                        <div
+                          key={currency}
+                          className="flex justify-between items-baseline"
+                        >
+                          <span className="text-base font-bold">
+                            {currency}
+                          </span>
+                          <span className="text-2xl font-bold text-accent">
+                            {formatPrice(amount, currency)}
+                          </span>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
 

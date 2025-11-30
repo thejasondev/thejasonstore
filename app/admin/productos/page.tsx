@@ -4,6 +4,11 @@ import { ProductsTable } from "@/components/admin/products-table";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import {
+  calculateInventoryValueByCurrency,
+  getSortedCurrencyEntries,
+} from "@/lib/utils/currency-utils";
+import { formatPrice } from "@/lib/utils/format";
 
 export const metadata = {
   title: "Gestión de Productos | Admin",
@@ -15,6 +20,10 @@ export default async function ProductsPage() {
     getProducts(),
     getCategories(),
   ]);
+
+  // Calculate inventory value by currency
+  const inventoryByCurrency = calculateInventoryValueByCurrency(products);
+  const sortedInventory = getSortedCurrencyEntries(inventoryByCurrency);
 
   return (
     <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -51,13 +60,25 @@ export default async function ProductsPage() {
           <p className="text-2xl font-bold">{products.length}</p>
         </div>
         <div className="glass-card p-4 rounded-lg">
-          <p className="text-sm text-muted-foreground">Valor del Inventario</p>
-          <p className="text-2xl font-bold text-accent">
-            $
-            {products
-              .reduce((acc, p) => acc + p.price * p.stock, 0)
-              .toLocaleString()}
+          <p className="text-sm text-muted-foreground mb-2">
+            Valor del Inventario
           </p>
+          {sortedInventory.length > 0 ? (
+            <div className="space-y-1">
+              {sortedInventory.map(([currency, value]) => (
+                <div key={currency} className="flex items-baseline gap-2">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {currency}:
+                  </span>
+                  <span className="text-lg font-bold text-accent">
+                    {formatPrice(value, currency)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-2xl font-bold text-accent">$0</p>
+          )}
         </div>
         <div className="glass-card p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">Bajo Stock</p>
