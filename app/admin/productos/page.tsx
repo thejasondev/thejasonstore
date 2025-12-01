@@ -83,7 +83,7 @@ export default async function ProductsPage() {
         <div className="glass-card p-4 rounded-lg">
           <p className="text-sm text-muted-foreground">Bajo Stock</p>
           <p className="text-2xl font-bold text-destructive">
-            {products.filter((p) => p.stock < 5).length}
+            {products.filter((p) => p.stock <= 2).length}
           </p>
         </div>
         <div className="glass-card p-4 rounded-lg">

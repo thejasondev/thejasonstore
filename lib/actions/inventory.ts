@@ -20,6 +20,10 @@ export interface LowStockProduct {
   title: string;
   sku: string;
   stock: number;
+  price: number;
+  currency: string;
+  category: string;
+  category_id?: string | null;
   low_stock_threshold?: number | null;
 }
 
@@ -86,11 +90,13 @@ export async function getInventoryHistory(
 export async function getLowStockProducts(): Promise<LowStockProduct[]> {
   const supabase = await createClient();
 
-  const LOW_STOCK_DEFAULT_THRESHOLD = 5;
+  const LOW_STOCK_DEFAULT_THRESHOLD = 2;
 
   const { data, error } = await supabase
     .from("products")
-    .select("id, title, sku, stock, low_stock_threshold");
+    .select(
+      "id, title, sku, stock, price, currency, category, category_id, low_stock_threshold"
+    );
 
   if (error) {
     const missingThresholdColumn =
@@ -102,7 +108,9 @@ export async function getLowStockProducts(): Promise<LowStockProduct[]> {
       // console.warn("[v0] low_stock_threshold column missing, falling back to default threshold")
       const fallback = await supabase
         .from("products")
-        .select("id, title, sku, stock");
+        .select(
+          "id, title, sku, stock, price, currency, category, category_id"
+        );
 
       if (fallback.error) {
         console.error(
@@ -138,7 +146,9 @@ export async function getOutOfStockProducts(): Promise<any[]> {
 
   const { data, error } = await supabase
     .from("products")
-    .select("id, title, sku, stock, updated_at")
+    .select(
+      "id, title, sku, stock, price, currency, category, category_id, updated_at"
+    )
     .lte("stock", 0)
     .order("updated_at", { ascending: false });
 

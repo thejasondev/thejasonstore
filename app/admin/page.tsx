@@ -38,7 +38,7 @@ export default async function AdminPage() {
     getBanners(),
   ]);
 
-  const lowStockCount = products.filter((p) => p.stock < 5).length;
+  const lowStockCount = products.filter((p) => p.stock <= 2).length;
   const activeBannersCount = banners.filter((b) => b.is_active).length;
   const activeSalesCount = products.filter((p) => p.is_on_sale).length;
 
@@ -172,7 +172,7 @@ export default async function AdminPage() {
               Estado del Inventario
             </h2>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/admin/productos">Ver todo el inventario</Link>
+              <Link href="/admin/inventario">Ver todo el inventario</Link>
             </Button>
           </div>
           <InventoryDashboard />
