@@ -24,6 +24,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils/format";
+import {
+  getEffectivePrice,
+  calculateDiscountPercentage,
+} from "@/lib/utils/discount-utils";
+import { SaleBadge } from "@/components/sale-badge";
 
 interface ProductQuickViewProps {
   product: Product | null;
@@ -50,6 +55,13 @@ export function ProductQuickView({
   const images =
     validImages.length > 0 ? validImages : product.images.slice(0, 1);
   const hasMultipleImages = images.length > 1;
+
+  // Sale price logic
+  const isOnSale = product.is_on_sale && product.sale_price;
+  const effectivePrice = getEffectivePrice(product);
+  const discountPercentage = isOnSale
+    ? calculateDiscountPercentage(product.price, product.sale_price!)
+    : 0;
 
   const handleAddToCart = async () => {
     if (!inStock || isAdding) return;
@@ -187,11 +199,33 @@ export function ProductQuickView({
             </div>
 
             <div className="border-y border-border py-4">
-              <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-3xl font-bold">
-                  {formatPrice(product.price, product.currency)}
-                </span>
+              {/* Price Display */}
+              <div className="mb-3">
+                {isOnSale ? (
+                  <div className="space-y-2">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-accent">
+                        {formatPrice(effectivePrice, product.currency)}
+                      </span>
+                      <span className="text-xl font-medium text-muted-foreground line-through">
+                        {formatPrice(product.price, product.currency)}
+                      </span>
+                    </div>
+                    <SaleBadge
+                      originalPrice={product.price}
+                      salePrice={product.sale_price!}
+                      variant="inline"
+                      size="default"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-3xl font-bold">
+                    {formatPrice(product.price, product.currency)}
+                  </span>
+                )}
               </div>
+
+              {/* Stock Badge */}
               {inStock ? (
                 <Badge
                   variant="outline"
