@@ -215,7 +215,7 @@ export function ProductQuickView({
                       originalPrice={product.price}
                       salePrice={product.sale_price!}
                       variant="inline"
-                      size="default"
+                      size="md"
                     />
                   </div>
                 ) : (
