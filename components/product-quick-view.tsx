@@ -163,7 +163,9 @@ export function ProductQuickView({
                 <div className="grid grid-cols-4 gap-2">
                   {images.map((image, index) => (
                     <button
+                      type="button"
                       key={index}
+                      aria-label={`Ver miniatura ${index + 1}`}
                       onClick={() => setCurrentImageIndex(index)}
                       className={cn(
                         "relative aspect-square overflow-hidden rounded-lg border-2 transition-all",
@@ -172,6 +174,9 @@ export function ProductQuickView({
                           : "border-border hover:border-accent/50"
                       )}
                     >
+                      <span className="sr-only">{`Ver miniatura ${
+                        index + 1
+                      }`}</span>
                       <Image
                         src={image || "/placeholder.svg"}
                         alt={`Miniatura ${index + 1}`}
