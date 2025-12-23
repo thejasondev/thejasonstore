@@ -183,4 +183,129 @@
       transform: scaleX(1);
     }
   }
+
+  /* Promotional Banner Gradient - Gold accent */
+  .promo-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      oklch(0.85 0.12 75) 100%
+    );
+  }
+
+  .promo-gradient-soft {
+    background: linear-gradient(
+      135deg,
+      oklch(0.95 0.08 75) 0%,
+      oklch(0.9 0.1 75) 100%
+    );
+  }
+
+  /* Pill Shape */
+  .pill-shape {
+    border-radius: 9999px;
+  }
+
+  /* Curved Background for Product Images */
+  .curved-bg {
+    position: relative;
+  }
+
+  .curved-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--muted);
+    border-radius: 0 0 50% 50% / 0 0 20% 20%;
+    z-index: -1;
+  }
+
+  /* Horizontal Scroll Container */
+  .scroll-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scroll-item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Favorite Heart Animation */
+  .favorite-btn {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .favorite-btn:active {
+    transform: scale(0.85);
+  }
+
+  .favorite-btn.is-favorite {
+    animation: heartPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes heartPop {
+    0% {
+      transform: scale(1);
+    }
+    25% {
+      transform: scale(1.3);
+    }
+    50% {
+      transform: scale(0.95);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Active Nav Indicator - Pill style */
+  .nav-indicator-pill {
+    position: relative;
+  }
+
+  .nav-indicator-pill::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--accent);
+    opacity: 0;
+    transition: all 0.2s ease;
+  }
+
+  .nav-indicator-pill.active::after {
+    opacity: 1;
+    width: 20px;
+  }
+
+  /* Verified Badge */
+  .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: oklch(0.95 0.08 75);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: oklch(0.4 0.1 75);
+  }
+
+  .dark .verified-badge {
+    background: oklch(0.25 0.08 75);
+    color: oklch(0.85 0.1 75);
+  }
 }

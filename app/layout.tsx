@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ResponsiveToaster } from "@/components/ui/responsive-toaster";
 import { CartProvider } from "@/lib/context/cart-context";
+import { FavoritesProvider } from "@/lib/context/favorites-context";
 import { MobileNav } from "@/components/mobile-nav";
 import {
   STORE_NAME,
@@ -118,10 +119,12 @@ export default function RootLayout({
       </head>
       <body className={`font-sans antialiased`}>
         <CartProvider>
-          {children}
-          <MobileNav />
-          <Analytics />
-          <ResponsiveToaster />
+          <FavoritesProvider>
+            {children}
+            <MobileNav />
+            <Analytics />
+            <ResponsiveToaster />
+          </FavoritesProvider>
         </CartProvider>
       </body>
     </html>

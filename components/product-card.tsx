@@ -14,10 +14,12 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  Heart,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useCart } from "@/lib/context/cart-context";
+import { useFavorites } from "@/lib/context/favorites-context";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils/format";
 import { SaleBadge } from "@/components/sale-badge";
@@ -31,9 +33,12 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [heartAnimating, setHeartAnimating] = useState(false);
   const router = useRouter();
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const inStock = product.stock > 0;
+  const isProductFavorite = isFavorite(product.id);
 
   // Filter out placeholder images
   const validImages = product.images.filter(
@@ -74,6 +79,21 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     onQuickView?.(product);
+  };
+
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite(product.id);
+    setHeartAnimating(true);
+    setTimeout(() => setHeartAnimating(false), 400);
+
+    if (!isProductFavorite) {
+      toast.success("¡Agregado a favoritos!", {
+        description: product.title,
+        icon: "❤️",
+      });
+    }
   };
 
   const nextImage = (e: React.MouseEvent) => {
@@ -152,7 +172,30 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
           ))}
 
           {/* Gradient overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20" />
+
+          {/* Favorite Button - Mobile First (always visible) */}
+          <button
+            onClick={handleFavoriteToggle}
+            className={cn(
+              "favorite-btn absolute top-3 right-3 z-40 h-9 w-9 rounded-full flex items-center justify-center transition-all",
+              "bg-white/90 dark:bg-black/70 backdrop-blur-sm shadow-lg",
+              "hover:scale-110 active:scale-95",
+              heartAnimating && isProductFavorite && "is-favorite"
+            )}
+            aria-label={
+              isProductFavorite ? "Quitar de favoritos" : "Agregar a favoritos"
+            }
+          >
+            <Heart
+              className={cn(
+                "h-5 w-5 transition-colors",
+                isProductFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-600 dark:text-gray-300"
+              )}
+            />
+          </button>
 
           {/* Sale Badge */}
           {product.is_on_sale && product.sale_price && (
@@ -161,6 +204,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
               salePrice={product.sale_price}
               variant="corner"
               size="md"
+              className="top-3 left-3"
             />
           )}
 

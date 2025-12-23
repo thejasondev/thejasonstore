@@ -155,8 +155,8 @@ export default async function HomePage() {
               </div>
             </section>
           )}
-          {/* Trust Indicators */}
-          <section className="border-y border-border/50 glass py-8 sm:py-12">
+          {/* Trust Indicators - Desktop Only */}
+          <section className="hidden md:block border-y border-border/50 glass py-8 sm:py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
                 <div className="flex flex-col items-center text-center gap-3">
@@ -195,39 +195,50 @@ export default async function HomePage() {
             <BannerRenderer banners={banners} position="info" />
           </section>
 
-          {/* Categories Section */}
-          <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-balance">
-              Explora por Categorías
-            </h2>
+          {/* Categories Section - Horizontal Scroll Mobile-First */}
+          <section className="py-8 sm:py-12 lg:py-16">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold">Categorías</h2>
+                <Link
+                  href="/productos"
+                  className="text-sm text-accent hover:underline"
+                >
+                  Ver todo
+                </Link>
+              </div>
 
-            {categories.length === 0 ? (
-              <div className="glass-card rounded-2xl p-8 text-center">
-                <p className="text-muted-foreground">
-                  Aún no hay categorías configuradas. Crea nuevas categorías en
-                  Supabase para comenzar a mostrarlas aquí.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-                {categories.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/categoria/${category.slug}`}
-                    className="flex flex-col items-center justify-center p-6 rounded-lg glass-card glass-hover group"
-                    aria-label={`Ver productos de ${category.name}`}
-                  >
-                    <CategoryIcon
-                      iconName={category.icon || category.slug}
-                      className="h-8 w-8 mb-3 group-hover:text-accent transition-all group-hover:scale-110"
-                    />
-                    <span className="text-sm font-medium text-center">
-                      {category.name}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
+              {categories.length === 0 ? (
+                <div className="glass-card rounded-2xl p-8 text-center">
+                  <p className="text-muted-foreground">
+                    Aún no hay categorías configuradas. Crea nuevas categorías
+                    en Supabase para comenzar a mostrarlas aquí.
+                  </p>
+                </div>
+              ) : (
+                /* Horizontal Scroll on Mobile, Grid on Desktop */
+                <div className="scroll-container gap-3 pb-2 md:grid md:grid-cols-4 lg:grid-cols-6 md:gap-4 md:overflow-visible">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      href={`/categoria/${category.slug}`}
+                      className="scroll-item flex flex-col items-center justify-center w-20 sm:w-24 md:w-auto p-3 sm:p-4 md:p-6 rounded-2xl glass-card glass-hover group"
+                      aria-label={`Ver productos de ${category.name}`}
+                    >
+                      <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-accent/10 flex items-center justify-center mb-2 group-hover:bg-accent/20 transition-colors">
+                        <CategoryIcon
+                          iconName={category.icon || category.slug}
+                          className="h-6 w-6 sm:h-7 sm:w-7 text-accent group-hover:scale-110 transition-transform"
+                        />
+                      </div>
+                      <span className="text-xs sm:text-sm font-medium text-center line-clamp-1">
+                        {category.name}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </section>
 
           {/* Featured Products */}

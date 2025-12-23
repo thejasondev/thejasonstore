@@ -10,7 +10,7 @@ import { WhatsAppButton } from "@/components/whatsapp-button";
 import { ProductJsonLd } from "@/components/json-ld";
 import { STORE_NAME } from "@/lib/constants";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Store } from "lucide-react";
 import {
   getEffectivePrice,
   calculateDiscountPercentage,
@@ -132,26 +132,45 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-6xl mx-auto">
-          {/* Image Gallery */}
+          {/* Image Gallery - Mobile First with Curved Background */}
           <div className="space-y-4">
-            <div className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
-              <Image
-                src={
-                  product.images[0] || "/placeholder.svg?height=600&width=600"
-                }
-                alt={product.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
+            {/* Main Image with Curved Background */}
+            <div className="relative">
+              {/* Curved Background - Only visible on Mobile */}
+              <div className="absolute inset-0 bg-muted rounded-b-[40%] md:rounded-b-[30%] -z-10 transform scale-105 h-[90%]" />
+
+              <div className="relative aspect-square overflow-hidden rounded-2xl md:rounded-3xl border border-border/50 bg-muted/50">
+                <Image
+                  src={
+                    product.images[0] || "/placeholder.svg?height=600&width=600"
+                  }
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+
+                {/* Sale Badge on Image */}
+                {isOnSale && product.sale_price && (
+                  <SaleBadge
+                    originalPrice={product.price}
+                    salePrice={product.sale_price}
+                    variant="corner"
+                    size="lg"
+                    className="top-4 left-4"
+                  />
+                )}
+              </div>
             </div>
+
+            {/* Thumbnail Gallery */}
             {product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-2 sm:gap-4">
                 {product.images.slice(1).map((image, index) => (
                   <div
                     key={index}
-                    className="relative aspect-square overflow-hidden rounded-lg border border-border bg-muted"
+                    className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted cursor-pointer hover:ring-2 hover:ring-accent transition-all"
                   >
                     <Image
                       src={image || "/placeholder.svg"}
@@ -167,18 +186,47 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
-            <div>
-              <Badge variant="outline" className="mb-4">
+          <div className="space-y-5">
+            {/* Category Badge */}
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-xs">
                 {product.category}
               </Badge>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-balance">
-                {product.title}
-              </h1>
-              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                {product.description}
-              </p>
             </div>
+
+            {/* Title */}
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-balance leading-tight">
+              {product.title}
+            </h1>
+
+            {/* Verified Store Badge - Mobile First Design */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center">
+                  <Store className="h-5 w-5 text-accent" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-medium text-sm">{STORE_NAME}</span>
+                    <BadgeCheck className="h-4 w-4 text-accent fill-accent/20" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    Tienda oficial
+                  </span>
+                </div>
+              </div>
+              <Badge
+                variant="outline"
+                className="pill-shape bg-primary text-primary-foreground border-0 text-xs px-3"
+              >
+                Verificado
+              </Badge>
+            </div>
+
+            {/* Description */}
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              {product.description}
+            </p>
 
             <div className="border-y border-border py-6">
               <div className="space-y-3">
@@ -232,13 +280,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
               )}
             </div>
 
-            <div className="space-y-4">
+            {/* Action Buttons */}
+            <div className="space-y-3 pt-2">
               <WhatsAppButton product={product} />
 
-              <div className="text-sm text-muted-foreground space-y-2">
-                <p>• SKU: {product.sku}</p>
-                <p>• Compra segura por WhatsApp</p>
-                <p>• Respuesta inmediata</p>
+              {/* Trust Indicators */}
+              <div className="flex items-center justify-center gap-4 pt-2">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <BadgeCheck className="h-4 w-4 text-accent" />
+                  Compra segura
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <BadgeCheck className="h-4 w-4 text-accent" />
+                  Respuesta rápida
+                </div>
               </div>
             </div>
 
@@ -261,16 +316,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
               </dl>
             </div>
-            {isOnSale && product.sale_price && (
-              <div className="absolute top-4 right-4">
-                <SaleBadge
-                  originalPrice={product.price}
-                  salePrice={product.sale_price}
-                  variant="corner"
-                  size="lg"
-                />
-              </div>
-            )}
           </div>
         </div>
       </main>

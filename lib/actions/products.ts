@@ -621,3 +621,40 @@ export async function removeProductSale(id: string) {
 
   return data;
 }
+
+/**
+ * Fetches multiple products by their IDs
+ */
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  if (!ids || ids.length === 0) {
+    return [];
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .in("id", ids)
+      .eq("is_active", true);
+
+    if (error) {
+      if (error.code === "42P01" || error.message.includes("does not exist")) {
+        console.log(
+          "[v0] Products table doesn't exist yet. Please run the SQL scripts."
+        );
+        return [];
+      }
+      console.error("[v0] Error fetching products by ids:", error);
+      return [];
+    }
+
+    // Preserve the order of IDs passed in
+    const productMap = new Map(data?.map((p) => [p.id, p]) || []);
+    return ids.map((id) => productMap.get(id)).filter(Boolean) as Product[];
+  } catch (error) {
+    console.error("[v0] Unexpected error fetching products by ids:", error);
+    return [];
+  }
+}
