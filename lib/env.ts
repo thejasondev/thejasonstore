@@ -1,16 +1,24 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 /**
  * Esquema de validación para variables de entorno
  * Asegura que todas las variables necesarias estén presentes y sean válidas
  */
 const envSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url('URL de Supabase inválida'),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, 'Anon key de Supabase requerida'),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'Service role key requerida').optional(),
-  NEXT_PUBLIC_WHATSAPP_PHONE: z.string().regex(/^\d+$/, 'Número de WhatsApp debe contener solo dígitos'),
-  NEXT_PUBLIC_SITE_URL: z.string().url('URL del sitio inválida'),
-})
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url("URL de Supabase inválida"),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z
+    .string()
+    .min(1, "Anon key de Supabase requerida"),
+  SUPABASE_SERVICE_ROLE_KEY: z
+    .string()
+    .min(1, "Service role key requerida")
+    .optional(),
+  NEXT_PUBLIC_WHATSAPP_PHONE: z
+    .string()
+    .regex(/^\d+$/, "Número de WhatsApp debe contener solo dígitos"),
+  NEXT_PUBLIC_SITE_URL: z.string().url("URL del sitio inválida"),
+  CRON_SECRET: z.string().min(1, "Secret para cron jobs requerido").optional(),
+});
 
 /**
  * Variables de entorno validadas
@@ -22,4 +30,5 @@ export const env = envSchema.parse({
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   NEXT_PUBLIC_WHATSAPP_PHONE: process.env.NEXT_PUBLIC_WHATSAPP_PHONE,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-})
+  CRON_SECRET: process.env.CRON_SECRET,
+});
